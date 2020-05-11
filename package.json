@@ -1,0 +1,30 @@
+{
+  "name": "project_1_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./build/index.js",
+    "dev-start": "tsc && node ./build/index.js",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/200406-java-react-usf/drew_peters_p1_api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/200406-java-react-usf/drew_peters_p1_api/issues"
+  },
+  "homepage": "https://github.com/200406-java-react-usf/drew_peters_p1_api#readme",
+  "devDependencies": {
+    "@types/express": "^4.17.6",
+    "@types/node": "^13.13.5",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
