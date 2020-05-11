@@ -1,5 +1,7 @@
-package-lock.json
 node_modules/
+docs/
+package-lock.json
 build/
-.vscode/
+coverage/
+*/__temp__/
 .env
