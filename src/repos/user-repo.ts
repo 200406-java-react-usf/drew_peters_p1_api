@@ -1,11 +1,6 @@
 import { User } from '../models/user';
 import { CrudRepository } from './crud-repo';
-import {
-    NotImplementedError, 
-    ResourceNotFoundError, 
-    ResourcePersistenceError,
-    InternalServerError
-} from '../errors/errors';
+import { InternalServerError } from '../errors/errors';
 import { PoolClient } from 'pg';
 import { connectionPool } from '..';
 import { mapUserResultSet } from '../util/result-set-mapper';
@@ -105,16 +100,16 @@ export class UserRepository implements CrudRepository<User> {
             client = await connectionPool.connect();
 
             // WIP: hacky fix since we need to make two DB calls
-            let roleId = (await client.query('select id from user_roles where name = $1', [newUser.role])).rows[0].id;
+            let roleId = (await client.query('select id from user_roles where name = $1', [newUser.role_name])).rows[0].id;
             
             let sql = `
                 insert into app_users (username, password, first_name, last_name, email, role_id) 
                 values ($1, $2, $3, $4, $5, $6) returning id
             `;
 
-            let rs = await client.query(sql, [newUser.username, newUser.password, newUser.firstName, newUser.lastName, newUser.email, roleId]);
+            let rs = await client.query(sql, [newUser.username, newUser.password, newUser.first_name, newUser.last_name, newUser.email, roleId]);
             
-            newUser.id = rs.rows[0].id;
+            newUser.ers_user_id = rs.rows[0].id;
             
             return newUser;
 

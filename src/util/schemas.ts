@@ -13,18 +13,18 @@ export interface UserSchema {
 /**
  * 
  */
-export interface AccountSchema {
-    id: number,
-    balance: number,
-    type: string,
-    owner_id: number
-}
-/**
- * 
- */
-export interface TransactionSchema {
-    id: number,
-    amount: number,
-    description: string,
-    account_id: number
-}
+// export interface AccountSchema {
+//     id: number,
+//     balance: number,
+//     type: string,
+//     owner_id: number
+// }
+// /**
+//  * 
+//  */
+// export interface TransactionSchema {
+//     id: number,
+//     amount: number,
+//     description: string,
+//     account_id: number
+// }
