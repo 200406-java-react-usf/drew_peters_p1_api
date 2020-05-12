@@ -1,9 +1,8 @@
 import { UserSchema } from "./schemas";
 import { User } from "../models/user";
-// import { AccountSchema } from "./schemas";
-// import { Account } from "../models/account";
-// import { TransactionSchema } from "./schemas";
-// import { Transaction } from "../models/transaction";
+import { ReimbursementSchema } from "./schemas";
+import { Reimbursement } from "../models/reimbursement";
+
 /**
  * 
  */
@@ -26,32 +25,22 @@ export function mapUserResultSet(resultSet: UserSchema): User {
 /**
  * 
  */
-// export function mapAccountResultSet(resultSet: AccountSchema): Account {
+export function mapReimbursementResultSet(resultSet: ReimbursementSchema): Reimbursement {
     
-//     if (!resultSet) {
-//         return {} as Account;
-//     }
+    if (!resultSet) {
+        return {} as Reimbursement;
+    }
 
-//     return new Account(
-//         resultSet.id,
-//         resultSet.balance,
-//         resultSet.type,
-//         resultSet.owner_id
-//     );
-// }
-// /**
-//  * 
-//  */
-// export function mapTransactionResultSet(resultSet: TransactionSchema): Transaction {
-    
-//     if (!resultSet) {
-//         return {} as Transaction;
-//     }
-
-//     return new Transaction(
-//         resultSet.id,
-//         resultSet.amount,
-//         resultSet.description,
-//         resultSet.account_id
-//     );
-// }
+    return new Reimbursement(
+        resultSet.id,
+        resultSet.amount,
+        resultSet.submitted,
+        resultSet.resolved,
+        resultSet.description,
+        resultSet.receipt,
+        resultSet.author,
+        resultSet.resolver,
+        resultSet.reimb_status_id,
+        resultSet.reimb_type_id
+    );
+}

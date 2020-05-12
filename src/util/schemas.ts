@@ -13,18 +13,15 @@ export interface UserSchema {
 /**
  * 
  */
-// export interface AccountSchema {
-//     id: number,
-//     balance: number,
-//     type: string,
-//     owner_id: number
-// }
-// /**
-//  * 
-//  */
-// export interface TransactionSchema {
-//     id: number,
-//     amount: number,
-//     description: string,
-//     account_id: number
-// }
+export interface ReimbursementSchema {
+    id: number;
+    amount: number;
+    submitted: Date;
+    resolved: Date;
+    description: string;
+    receipt: number;//
+    author: string;
+    resolver: string;
+    reimb_status_id: number;
+    reimb_type_id: number;
+}
