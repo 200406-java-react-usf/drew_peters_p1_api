@@ -10,6 +10,7 @@ export const UserRouter = express.Router();
 const userService = AppConfig.userService;
 
 UserRouter.get('', adminGuard, async (req, resp) => {
+    console.log('GET ALL USERS REQUESTED @/users');
     try {
         let reqURL = url.parse(req.url, true);
         if(!isEmptyObject(reqURL.query)) {
@@ -25,6 +26,7 @@ UserRouter.get('', adminGuard, async (req, resp) => {
 });
 
 UserRouter.get('/:id', adminGuard, async (req, resp) => {
+    console.log('GET USER BY ID REQUESTED @/users');
     const id = +req.params.id;
     try {
         let payload = await userService.getUserById(id);
@@ -35,8 +37,7 @@ UserRouter.get('/:id', adminGuard, async (req, resp) => {
 });
 
 UserRouter.post('', adminGuard, async (req, resp) => {
-
-    console.log('USER POST REQUEST RECEIVED AT /users');
+    console.log('NEW USER REQUESTED @/users');
     console.log(req.body);
     try {
         let newUser = await userService.addNewUser(req.body);
@@ -48,8 +49,7 @@ UserRouter.post('', adminGuard, async (req, resp) => {
 
 UserRouter.patch('/:id', adminGuard, async (req, resp) => {
     const id = +req.params.id;
-
-    console.log('USER UPDATE REQUEST RECEIVED AT /users');
+    console.log('UPDATE USER REQUESTED @/users');
     console.log(req.body);
     try {
         let status = await userService.updateUser(req.body);
@@ -61,8 +61,7 @@ UserRouter.patch('/:id', adminGuard, async (req, resp) => {
 
 UserRouter.delete('/:id', adminGuard, async (req, resp) => {
     const id = +req.params.id;
-
-    console.log('USER DELETE REQUEST RECEIVED AT /users');
+    console.log('DELETE USER REQUESTED @/users');
     console.log(req.body);
     try {
         let status = await userService.deleteById(id);
