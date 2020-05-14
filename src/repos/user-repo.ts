@@ -35,7 +35,7 @@ export class UserRepository implements CrudRepository<User> {
             return rs.rows.map(mapUserResultSet);
         
         } catch (e) {
-            throw new InternalServerError();
+            throw new InternalServerError('Unable to retrieve all users');
         } finally {
             client && client.release();
         }
@@ -56,7 +56,7 @@ export class UserRepository implements CrudRepository<User> {
             return mapUserResultSet(rs.rows[0]);
         
         } catch (e) {
-            throw new InternalServerError();
+            throw new InternalServerError('Unable to retrieve user by ID');
         } finally {
             client && client.release();
         }
@@ -78,12 +78,54 @@ export class UserRepository implements CrudRepository<User> {
             return mapUserResultSet(rs.rows[0]);
         
         } catch (e) {
-            throw new InternalServerError();
+            throw new InternalServerError('Unable to retrieve user by unique key');
         } finally {
             client && client.release();
         }
         
     
+    }
+
+    async getByUsername(un: string): Promise<User> {
+
+        let client: PoolClient;
+
+        try{
+            client = await connectionPool.connect();
+
+            let sql = `${this.baseQuery} where au.username = $1`;
+
+            let rs = await client.query(sql, [un]);
+
+            return rs.rows[0];
+
+        } catch(e){
+            throw new InternalServerError('Unable to retrieve user by username');
+        } finally{
+            client && client.release();
+        }
+
+    }
+
+    async getByRole(role_id: number): Promise<User[]>{
+
+        let client: PoolClient;
+
+        try{
+            client = await connectionPool.connect();
+
+            let sql = 'select * from app_users where user_role_id = $1';
+
+            let rs = await client.query(sql, [role_id]);
+
+            return rs.rows;
+
+        } catch(e){
+            throw new InternalServerError('Unable to retrieve user by role');
+        } finally{
+            client && client.release();
+        }
+
     }
 
     async getUserByCredentials(un: string, pw: string) {
@@ -100,7 +142,7 @@ export class UserRepository implements CrudRepository<User> {
             return mapUserResultSet(rs.rows[0]);
         
         } catch (e) {
-            throw new InternalServerError();
+            throw new InternalServerError('Unable to retrieve user by credentials');
         } finally {
             client && client.release();
         }
@@ -130,7 +172,7 @@ export class UserRepository implements CrudRepository<User> {
 
         } catch (e) {
             console.log(e);
-            throw new InternalServerError();
+            throw new InternalServerError('Unable to save new user');
         } finally {
             client && client.release();
         }
@@ -159,7 +201,7 @@ export class UserRepository implements CrudRepository<User> {
             return true;
         
         } catch (e) {
-            throw new InternalServerError();
+            throw new InternalServerError('Unable to update user');
         } finally {
             client && client.release();
         }
@@ -168,7 +210,7 @@ export class UserRepository implements CrudRepository<User> {
 /**
  * 
  */
-    async deleteById(deletedUser: User): Promise<boolean> {
+    async deleteById(id: number): Promise<boolean> {
         let client: PoolClient;
             try { 
                 client = await connectionPool.connect();
@@ -176,11 +218,11 @@ export class UserRepository implements CrudRepository<User> {
                     delete from app_users
                     where id = $1
                 `;
-                await client.query(sql, [deletedUser.ers_user_id]);
+                await client.query(sql, [id]);
                 return true;
             } catch (e) {
                 console.log(e);
-                throw new InternalServerError();
+                throw new InternalServerError('Unable to delete user');
             } finally {
                 client && client.release();
             }

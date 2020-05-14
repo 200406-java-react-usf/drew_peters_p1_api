@@ -38,8 +38,8 @@ export function mapReimbursementResultSet(resultSet: ReimbursementSchema): Reimb
         resultSet.resolved,
         resultSet.description,
         resultSet.receipt,
-        resultSet.author,
-        resultSet.resolver,
+        resultSet.author_id,
+        resultSet.resolver_id,
         resultSet.reimb_status_id,
         resultSet.reimb_type_id
     );

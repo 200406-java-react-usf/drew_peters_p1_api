@@ -2,6 +2,7 @@ import { UserRepository } from '../repos/user-repo';
 import * as mockIndex from '..';
 import * as mockMapper from '../util/result-set-mapper';
 import { User } from '../models/user';
+import { Role } from '../models/role';
 
 
 jest.mock('..', () => {
@@ -26,11 +27,6 @@ describe('userRepo', () => {
 
     beforeEach(() => {
 
-        /*
-            We can provide a successful retrieval as the default mock implementation
-            since it is very verbose. We can provide alternative implementations for
-            the query and release methods in specific tests if needed.
-        */
         (mockConnect as jest.Mock).mockClear().mockImplementation(() => {
             return {
                 query: jest.fn().mockImplementation(() => {
@@ -110,6 +106,64 @@ describe('userRepo', () => {
         expect(result).toBeTruthy();
         expect(result instanceof User).toBe(true);
 
+    });
+
+    test('Should resolve to a User object when getUserByUniqueKey retrieves a record given a valid unique key.', async () => {
+        expect.hasAssertions();
+        
+        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'email', 'locked');
+        (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+
+        let result = await sut.getUserByUniqueKey('username', 'un');
+
+        expect(result).toBeTruthy();
+        expect(result instanceof User).toBe(true);
+    });
+
+    test('Should resolve to a User object when getUserByCredentials retrieves a record given a valid username and password.', async () => {
+        expect.hasAssertions();
+        
+        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'email', 'locked');
+        (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+
+        let result = await sut.getUserByCredentials('un', 'pw');
+
+        expect(result).toBeTruthy();
+        expect(result instanceof User).toBe(true);
+    });
+
+    test('Should resolve to a User object when save retrieves a valid user object', async () => {
+        expect.hasAssertions();
+        
+        let mockUser = new User(6, 'un', 'pw', 'fn', 'ln', 'email', 'locked');
+        (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+
+        let result = await sut.save(mockUser);
+
+        expect(result).toBeTruthy();
+        expect(result instanceof User).toBe(true);
+    });
+
+    test('Should resolve to true when deleteById deletes a valid user object', async () => {
+        expect.hasAssertions();
+        
+        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'email', 'locked');
+        (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+
+        let result = await sut.deleteById(1);
+
+        expect(result).toBeTruthy();
+    });
+
+    test('Should resolve to true when update updates a valid user object', async () => {
+        expect.hasAssertions();
+        
+        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'email', 'locked');
+        (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+
+        let result = await sut.update(mockUser);
+
+        expect(result).toBeTruthy();
     });
 
 });

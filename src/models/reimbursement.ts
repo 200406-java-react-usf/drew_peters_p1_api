@@ -7,9 +7,9 @@ export class Reimbursement {
     submitted: Date;
     resolved: Date;
     description: string;
-    receipt: number; //placeholder
-    author: string;
-    resolver: string;
+    receipt: number;
+    author_id: number;
+    resolver_id: number;
     reimb_status_id: number;
     reimb_type_id: number;
 
@@ -19,8 +19,8 @@ export class Reimbursement {
                 resolved: Date, 
                 description: string, 
                 receipt: number, 
-                author: string, 
-                resolver: string, 
+                author_id: number, 
+                resolver_id: number, 
                 reimb_status_id: number, 
                 reimb_type_id: number) 
     {
@@ -30,8 +30,8 @@ export class Reimbursement {
         this.resolved = resolved;
         this.description = description;
         this.receipt = receipt;
-        this.author = author;
-        this.resolver = resolver;
+        this.author_id = author_id;
+        this.resolver_id = resolver_id;
         this.reimb_status_id = reimb_status_id;
         this.reimb_type_id = reimb_type_id;
     }
