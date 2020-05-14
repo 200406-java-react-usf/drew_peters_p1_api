@@ -7,7 +7,8 @@ import {
 } from '../util/validator';
 import { 
     BadRequestError, 
-    ResourceNotFoundError
+    ResourceNotFoundError,
+    ResourceConflictError
 } from '../errors/errors';
 
 export class ReimbursementService {
@@ -15,9 +16,9 @@ export class ReimbursementService {
     constructor(private reimbursementRepo: ReimbursementRepository) {
         this.reimbursementRepo = reimbursementRepo;
     }
+    
 /**
- * Retrieves all orders from the orderRepo and returns them
- * if they exist.
+ * 
  */
     async getAllReimbursements(): Promise<Reimbursement[]> {
 
@@ -28,11 +29,25 @@ export class ReimbursementService {
         }
 
         return reimbursements;
-
     }
 
 /**
- * Gets an order by its serial ID value
+ * 
+ */
+    async getAllReimbursementsByUser(id: number): Promise<Reimbursement[]> {
+
+        let reimbursements = await this.reimbursementRepo.getAllByUser(id);
+    
+        if (reimbursements.length == 0) {
+            throw new ResourceNotFoundError();
+        }
+    
+        return reimbursements;
+    
+    }
+
+/**
+ * 
  */
     async getReimbursementById(id: number): Promise<Reimbursement> {
 
@@ -53,12 +68,10 @@ export class ReimbursementService {
         } catch (e) {
             throw e;
         }
-
     }
 
-
 /**
- * Adds a new order to the database
+ * 
  */
     async addNewReimbursement(newReimbursement: Reimbursement): Promise<Reimbursement> {
             
@@ -78,25 +91,53 @@ export class ReimbursementService {
     }
 
 /**
- * Updates an order at the specified index given a new order object and a
- * specified index.
+ * 
  */
-    async updateReimbursement(id: number, updatedReimbursement: Reimbursement): Promise<boolean> {
+    async updateReimbursement(updatedReimbursement: Reimbursement): Promise<boolean> {
         
-
-
-        if (!isValidObject(updatedReimbursement)) {
+        if (!isValidObject(updatedReimbursement, 'id') || !isValidId(updatedReimbursement.id)) {
             throw new BadRequestError('Invalid reimbursement provided.');
         }
 
-        updatedReimbursement.id = id;
+        let reimbToUpdate = await this.getReimbursementById(updatedReimbursement.id);
+
+        if(updatedReimbursement.reimb_status_id !== 1){
+            throw new ResourceConflictError('Cannot update a non-pending reimbursment');
+        }
+
+        if(updatedReimbursement.author_id !== reimbToUpdate.author_id){
+            throw new ResourceConflictError('Cannot update author ID');
+        }
+
+        if(updatedReimbursement.id !== reimbToUpdate.id){
+            throw new ResourceConflictError('Cannot update reimbursment ID');
+        }
+
+        if(updatedReimbursement.reimb_status_id !== reimbToUpdate.reimb_status_id){
+            throw new ResourceConflictError('Cannot update status of reimbursment');
+        }
+
+        if(updatedReimbursement.receipt !== reimbToUpdate.receipt){
+            throw new ResourceConflictError('Cannot update receipt of reimbursment');
+        }
+
+        if(updatedReimbursement.resolved !== reimbToUpdate.resolved){
+            throw new ResourceConflictError('Cannot update resolved time');
+        }
+
+        if(updatedReimbursement.resolver_id !== reimbToUpdate.resolver_id){
+            throw new ResourceConflictError('Cannot update resolver ID');
+        }
+
+        if(updatedReimbursement.submitted !== reimbToUpdate.submitted){
+            throw new ResourceConflictError('Cannot update submitted time');
+        }
 
         return await this.reimbursementRepo.update(updatedReimbursement);
-
     }
 
 /**
- * Deletes an item given its serial ID
+ * 
  */
     async deleteById(id: number): Promise<boolean> {
         

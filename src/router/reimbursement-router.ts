@@ -26,7 +26,7 @@ ReimbursementRouter.get('/:id', adminGuard, async (req, resp) => {
         let payload = await reimbursementService.getReimbursementById(id); 
         return resp.status(200).json(payload);
     } catch (e) {
-        return resp.status(e.statusCode).json(e).send();
+        return resp.status(e.statusCode).json(e);
     }
 });
 
@@ -36,9 +36,9 @@ ReimbursementRouter.post('', adminGuard, async (req, resp) => {
     console.log(req.body);
     try {
         let newUser = await reimbursementService.addNewReimbursement(req.body);
-        return resp.status(201).json(newUser).send();
+        return resp.status(201).json(newUser);
     } catch (e) {
-        return resp.status(e.statusCode).json(e).send();
+        return resp.status(e.statusCode).json(e);
     }
 });
 
@@ -47,10 +47,10 @@ ReimbursementRouter.patch('/:id', adminGuard, async (req, resp) => {
     console.log('UPDATE REIMB REQUESTED @/reimbursement');
     console.log(req.body);
     try {
-        let status = await reimbursementService.updateReimbursement(id, req.body);
-        return resp.status(204).json(status).send();
+        let status = await reimbursementService.updateReimbursement(req.body);
+        return resp.status(204).json(status);
     } catch (e) {
-        return resp.status(e.statusCode).json(e).send();
+        return resp.status(e.statusCode).json(e);
     }
 });
 
@@ -60,8 +60,8 @@ ReimbursementRouter.delete('/:id', adminGuard, async (req, resp) => {
     console.log(req.body);
     try {
         let status = await reimbursementService.deleteById(id);
-        return resp.status(204).json(status).send();
+        return resp.status(204).json(status);
     } catch (e) {
-        return resp.status(e.statusCode).json(e).send();
+        return resp.status(e.statusCode).json(e);
     }
 });

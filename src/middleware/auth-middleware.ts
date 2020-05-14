@@ -10,5 +10,4 @@ export const adminGuard = (req: Request, resp: Response, next) => {
     } else {
         resp.status(403).json(new AuthorizationError());
     }
-
 }

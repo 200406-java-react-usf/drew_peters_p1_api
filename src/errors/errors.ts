@@ -62,6 +62,16 @@ class AuthorizationError extends ApplicationError {
     }
 
 }
+
+class ResourceConflictError extends ApplicationError {
+
+    constructor(reason?: string) {
+        super(409, reason);
+        super.setMessage('Resource confliction!')
+
+    }
+
+}
 class InternalServerError extends ApplicationError {
 
     constructor(reason?: string) {
@@ -87,5 +97,6 @@ export {
     AuthenticationError,
     NotImplementedError,
     AuthorizationError,
+    ResourceConflictError,
     InternalServerError
 };
