@@ -13,6 +13,7 @@ import { Pool } from 'pg';
 
 // environment configuration
 dotenv.config();
+
 // database configuration
 export const connectionPool: Pool = new Pool({
     host: process.env['DB_HOST'],
@@ -22,18 +23,20 @@ export const connectionPool: Pool = new Pool({
     password: process.env['DB_PASSWORD'],
     max: 5
 });
+
 // morgan logging configuration
 fs.mkdir(`${__dirname}/logs`, () => {});
 const logStream = fs.createWriteStream(path.join(__dirname, 'logs/access.log'), { flags: 'a' });
+
 // web server configuration
 const app = express();
 app.use(morgan('combined', { stream: logStream }));
 app.use(sessionMiddleware);
 app.use(corsFilter);
 app.use('/', express.json());
+app.use('/auth', AuthRouter);
 app.use('/users', UserRouter);
 app.use('/reimbursements', ReimbursementRouter);
-app.use('/auth', AuthRouter);
 
 app.listen(8080, () => {
     console.log(`Application running and listening at: http://localhost:8080`);

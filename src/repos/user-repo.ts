@@ -21,6 +21,7 @@ export class UserRepository implements CrudRepository<User> {
         on au.role_id = ur.id
     `;
 
+// Gets all users 
     async getAll(): Promise<User[]> {
 
         let client: PoolClient;
@@ -42,6 +43,7 @@ export class UserRepository implements CrudRepository<User> {
     
     }
 
+// Gets a user by the specified ID
     async getById(id: number): Promise<User> {
 
         let client: PoolClient;
@@ -56,7 +58,7 @@ export class UserRepository implements CrudRepository<User> {
             return mapUserResultSet(rs.rows[0]);
         
         } catch (e) {
-            throw new InternalServerError('Unable to retrieve user by ID');
+            throw new InternalServerError('Unable to retrieve the user by ID');
         } finally {
             client && client.release();
         }
@@ -64,6 +66,7 @@ export class UserRepository implements CrudRepository<User> {
 
     }
 
+// Gets a user by a unique key
     async getUserByUniqueKey(key: string, val: string): Promise<User> {
 
         let client: PoolClient;
@@ -78,7 +81,7 @@ export class UserRepository implements CrudRepository<User> {
             return mapUserResultSet(rs.rows[0]);
         
         } catch (e) {
-            throw new InternalServerError('Unable to retrieve user by unique key');
+            throw new InternalServerError('Unable to retrieve the user by unique key');
         } finally {
             client && client.release();
         }
@@ -86,6 +89,7 @@ export class UserRepository implements CrudRepository<User> {
     
     }
 
+// Gets a user by username
     async getByUsername(un: string): Promise<User> {
 
         let client: PoolClient;
@@ -100,13 +104,14 @@ export class UserRepository implements CrudRepository<User> {
             return rs.rows[0];
 
         } catch(e){
-            throw new InternalServerError('Unable to retrieve user by username');
+            throw new InternalServerError('Unable to retrieve the user by username');
         } finally{
             client && client.release();
         }
 
     }
 
+// Gets a user by role
     async getByRole(role_id: number): Promise<User[]>{
 
         let client: PoolClient;
@@ -121,13 +126,14 @@ export class UserRepository implements CrudRepository<User> {
             return rs.rows;
 
         } catch(e){
-            throw new InternalServerError('Unable to retrieve user by role');
+            throw new InternalServerError('Unable to retrieve the user by role');
         } finally{
             client && client.release();
         }
 
     }
 
+// Gets a user by credentials
     async getUserByCredentials(un: string, pw: string) {
         
         let client: PoolClient;
@@ -142,13 +148,14 @@ export class UserRepository implements CrudRepository<User> {
             return mapUserResultSet(rs.rows[0]);
         
         } catch (e) {
-            throw new InternalServerError('Unable to retrieve user by credentials');
+            throw new InternalServerError('Unable to retrieve the user by credentials');
         } finally {
             client && client.release();
         }
     
     }
 
+// Saves a new user
     async save(newUser: User): Promise<User> {
             
         let client: PoolClient;
@@ -172,13 +179,14 @@ export class UserRepository implements CrudRepository<User> {
 
         } catch (e) {
             console.log(e);
-            throw new InternalServerError('Unable to save new user');
+            throw new InternalServerError('Unable to save the new user');
         } finally {
             client && client.release();
         }
     
     }
 
+// Updates a user, given value restricitions
     async update(updatedUser: User): Promise<boolean> {
         
         let client: PoolClient;
@@ -201,15 +209,14 @@ export class UserRepository implements CrudRepository<User> {
             return true;
         
         } catch (e) {
-            throw new InternalServerError('Unable to update user');
+            throw new InternalServerError('Unable to update the user');
         } finally {
             client && client.release();
         }
     
     }
-/**
- * 
- */
+
+// Deletes a user by ID
     async deleteById(id: number): Promise<boolean> {
         let client: PoolClient;
             try { 
@@ -222,7 +229,7 @@ export class UserRepository implements CrudRepository<User> {
                 return true;
             } catch (e) {
                 console.log(e);
-                throw new InternalServerError('Unable to delete user');
+                throw new InternalServerError('Unable to delete the user');
             } finally {
                 client && client.release();
             }
