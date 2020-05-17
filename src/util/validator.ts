@@ -22,6 +22,12 @@ export const isValidObject = (obj: Object, ...nullableProps: string[]) => {
 /**
  * 
  */
+export const isValidStatus = (status: string) => {
+    return status && status == "pending" || status == "approved" || status == "denied";
+}
+/**
+ * 
+ */
 export const isPropertyOf = (prop: string, type: any) => {
 
     if (!prop || !type) {

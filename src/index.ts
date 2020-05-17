@@ -38,6 +38,8 @@ app.use('/auth', AuthRouter);
 app.use('/users', UserRouter);
 app.use('/reimbursements', ReimbursementRouter);
 
-app.listen(8080, () => {
+const PORT = process.env.DB_PORT || 8080;
+
+app.listen(PORT, () => {
     console.log(`Application running and listening at: http://localhost:8080`);
 });

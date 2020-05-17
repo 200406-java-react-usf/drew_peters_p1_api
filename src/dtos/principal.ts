@@ -1,13 +1,14 @@
+
 export class Principal {
 
-    id: number;
+    ers_user_id: number;
     username: string;
-    role: string;
+    role_name: string;
 
     constructor(id: number, un: string, role: string) {
-        this.id = id;
+        this.ers_user_id = id;
         this.username = un;
-        this.role = role;
+        this.role_name = role;
     }
     
 }

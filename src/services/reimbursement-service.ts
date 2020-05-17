@@ -95,25 +95,25 @@ export class ReimbursementService {
  */
     async updateReimbursement(updatedReimbursement: Reimbursement): Promise<boolean> {
         
-        if (!isValidObject(updatedReimbursement, 'id') || !isValidId(updatedReimbursement.id)) {
+        if (!isValidObject(updatedReimbursement, 'id') || !isValidId(updatedReimbursement.reimb_id)) {
             throw new BadRequestError('Invalid reimbursement provided.');
         }
 
-        let reimbToUpdate = await this.getReimbursementById(updatedReimbursement.id);
+        let reimbToUpdate = await this.getReimbursementById(updatedReimbursement.reimb_id);
 
-        if(updatedReimbursement.reimb_status_id !== 1){
+        if(updatedReimbursement.reimb_status !== 1){
             throw new ResourceConflictError('Cannot update a non-pending reimbursment');
         }
 
-        if(updatedReimbursement.author_id !== reimbToUpdate.author_id){
+        if(updatedReimbursement.author !== reimbToUpdate.author){
             throw new ResourceConflictError('Cannot update author ID');
         }
 
-        if(updatedReimbursement.id !== reimbToUpdate.id){
+        if(updatedReimbursement.reimb_id !== reimbToUpdate.reimb_id){
             throw new ResourceConflictError('Cannot update reimbursment ID');
         }
 
-        if(updatedReimbursement.reimb_status_id !== reimbToUpdate.reimb_status_id){
+        if(updatedReimbursement.reimb_status !== reimbToUpdate.reimb_status){
             throw new ResourceConflictError('Cannot update status of reimbursment');
         }
 
@@ -125,7 +125,7 @@ export class ReimbursementService {
             throw new ResourceConflictError('Cannot update resolved time');
         }
 
-        if(updatedReimbursement.resolver_id !== reimbToUpdate.resolver_id){
+        if(updatedReimbursement.resolver !== reimbToUpdate.resolver){
             throw new ResourceConflictError('Cannot update resolver ID');
         }
 
