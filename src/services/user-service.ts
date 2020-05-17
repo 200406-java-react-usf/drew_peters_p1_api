@@ -1,6 +1,12 @@
 import { User } from "../models/user";
 import { UserRepository } from "../repos/user-repo";
-import { isValidId, isValidStrings, isValidObject, isPropertyOf, isEmptyObject } from "../util/validator";
+import { 
+    isValidId, 
+    isValidStrings, 
+    isValidObject, 
+    isPropertyOf, 
+    isEmptyObject 
+} from "../util/validator";
 import { 
     BadRequestError, 
     ResourceNotFoundError, 
@@ -115,27 +121,40 @@ export class UserService {
 
     async updateUser(updatedUser: User): Promise<boolean> {
         
-        try {
-
-            if (!isValidObject(updatedUser)) {
-                throw new BadRequestError('Invalid user provided (invalid values found).');
-            }
-
-            // let repo handle some of the other checking since we are still mocking db
-            return await this.userRepo.update(updatedUser);
-        } catch (e) {
-            throw e;
+        if (!isValidObject(updatedUser)) {
+            throw new BadRequestError();
         }
 
+        // will throw an error if no user is found with provided id
+        let toUpdateUser = await this.getUserById(updatedUser.ers_user_id);
+
+        let isAvailable = await this.isUsernameAvailable(updatedUser.username);
+
+        if(toUpdateUser.username === updatedUser.username) {
+            isAvailable = true;
+        }
+        
+        if (!isAvailable) {
+            throw new ResourcePersistenceError('This username is already taken. Please pick another.');
+        }
+
+        await this.userRepo.update(updatedUser);
+
+        return true;
     }
 
     async deleteById(id: number): Promise<boolean> {
         
-        try {
-            throw new NotImplementedError();
-        } catch (e) {
-            throw e;
+        if (!isValidObject(id)) {
+            throw new BadRequestError();
         }
+
+        // will throw an error if no user is found with provided id
+        await this.getUserById(id);
+
+        await this.userRepo.deleteById(id);
+
+        return true;
 
     }
     
@@ -169,11 +188,11 @@ export class UserService {
         try {
             await this.getUserByUniqueKey({'username': username});
         } catch (e) {
-            console.log('username is available')
+            console.log('Username is available')
             return true;
         }
 
-        console.log('username is unavailable')
+        console.log('Username is unavailable')
         return false;
 
     }
@@ -183,11 +202,11 @@ export class UserService {
         try {
             await this.getUserByUniqueKey({'email': email});
         } catch (e) {
-            console.log('email is available')
+            console.log('Email is available')
             return true;
         }
 
-        console.log('email is unavailable')
+        console.log('Email is unavailable')
         return false;
     }
 
