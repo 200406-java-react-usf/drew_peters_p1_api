@@ -1,5 +1,3 @@
-import { Receipt } from './receipt';
-
 export class Reimbursement {
 
     reimb_id: number;
@@ -8,10 +6,10 @@ export class Reimbursement {
     resolved: Date;
     description: string;
     receipt: number;
-    author: number;
-    resolver: number;
-    reimb_status: number;
-    reimb_type: number;
+    author: string;
+    resolver: string;
+    reimb_status: string;
+    reimb_type: string;
 
     constructor(id: number, 
                 amount: number, 
@@ -19,10 +17,10 @@ export class Reimbursement {
                 resolved: Date, 
                 description: string, 
                 receipt: number, 
-                author: number, 
-                resolver: number, 
-                reimb_status: number, 
-                reimb_type: number) 
+                author: string, 
+                resolver: string, 
+                reimb_status: string, 
+                reimb_type: string) 
     {
         this.reimb_id = id;
         this.amount = amount;

@@ -2,7 +2,7 @@
  * 
  */
 export interface UserSchema {
-    id: number,
+    ers_user_id: number,
     username: string,
     password: string,
     first_name: string,
@@ -14,14 +14,14 @@ export interface UserSchema {
  * 
  */
 export interface ReimbursementSchema {
-    id: number;
-    amount: number;
-    submitted: Date;
-    resolved: Date;
-    description: string;
-    receipt: number;
-    author_id: number;
-    resolver_id: number;
-    reimb_status_id: number;
-    reimb_type_id: number;
+    reimb_id: number,
+    amount: number,
+    submitted: Date,
+    resolved: Date,
+    description: string,
+    reciept: any,
+    author: string,
+    resolver: string,
+    reimb_status: string,
+    reimb_type: string
 }

@@ -11,7 +11,7 @@ export function mapUserResultSet(resultSet: UserSchema): User {
     }
 
     return new User(
-        resultSet.id,
+        resultSet.ers_user_id,
         resultSet.username,
         resultSet.password,
         resultSet.first_name,
@@ -29,15 +29,15 @@ export function mapReimbursementResultSet(resultSet: ReimbursementSchema): Reimb
     }
 
     return new Reimbursement(
-        resultSet.id,
+        resultSet.reimb_id,
         resultSet.amount,
         resultSet.submitted,
         resultSet.resolved,
         resultSet.description,
-        resultSet.receipt,
-        resultSet.author_id,
-        resultSet.resolver_id,
-        resultSet.reimb_status_id,
-        resultSet.reimb_type_id
+        resultSet.reciept,
+        resultSet.author,
+        resultSet.resolver,
+        resultSet.reimb_status,
+        resultSet.reimb_type
     );
 }
