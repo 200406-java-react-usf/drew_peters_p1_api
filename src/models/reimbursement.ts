@@ -2,16 +2,16 @@ import { Receipt } from './receipt';
 
 export class Reimbursement {
 
-    id: number;
+    reimb_id: number;
     amount: number;
     submitted: Date;
     resolved: Date;
     description: string;
     receipt: number;
-    author_id: number;
-    resolver_id: number;
-    reimb_status_id: number;
-    reimb_type_id: number;
+    author: number;
+    resolver: number;
+    reimb_status: number;
+    reimb_type: number;
 
     constructor(id: number, 
                 amount: number, 
@@ -19,20 +19,20 @@ export class Reimbursement {
                 resolved: Date, 
                 description: string, 
                 receipt: number, 
-                author_id: number, 
-                resolver_id: number, 
-                reimb_status_id: number, 
-                reimb_type_id: number) 
+                author: number, 
+                resolver: number, 
+                reimb_status: number, 
+                reimb_type: number) 
     {
-        this.id = id;
+        this.reimb_id = id;
         this.amount = amount;
         this.submitted = submitted;
         this.resolved = resolved;
         this.description = description;
         this.receipt = receipt;
-        this.author_id = author_id;
-        this.resolver_id = resolver_id;
-        this.reimb_status_id = reimb_status_id;
-        this.reimb_type_id = reimb_type_id;
+        this.author = author;
+        this.resolver = resolver;
+        this.reimb_status = reimb_status;
+        this.reimb_type = reimb_type;
     }
 }

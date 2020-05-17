@@ -7,19 +7,28 @@ import { mapReimbursementResultSet } from '../util/result-set-mapper';
 
 export class ReimbursementRepository implements CrudRepository<Reimbursement> {
 
-    baseQuery = `
-        select
-            ar.id, 
-            ar.amount, 
-            ar.submitted, 
-            ar.resolved,
-            ar.description,
-            ar.receipt,
-            ar.author_id,
-            ar.resolver_id,
-            ar.reimb_status_id,
-            ar.reimb_type_id
-        from app_reimbursements ar
+    baseQuery =  `
+    select
+        rb.ers_reimb_id, 
+        rb.amount, 
+        rb.submitted,
+        rb.resolved,
+        rb.reciept,
+        eu.username as rb.author_id,
+        eu.username as rb.resolver_id,
+        rs.reimb_statuses as reimb_status_id,
+        rt.reimb_types as reimb_type_id
+    from ers_reimbs rb
+    
+    INNER JOIN ers_reimb_types rt
+    ON rb.reimb_type_id =rt.reimb_type_id
+
+    INNER JOIN ers_reimb_statuses rs
+    ON rb.reimb_status_id = rs.reimb_status_id
+
+    INNER JOIN ers_users eu
+    ON rb.author_id = eu.ers_user_id
+    AND rb.resolver_id = eu.ers_user_id
     `;
 
 // Gets all items 
@@ -52,7 +61,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         try {
             client = await connectionPool.connect();
 
-            let sql = `${this.baseQuery} where ar.author_id = $1`;
+            let sql = `${this.baseQuery} where rb.author_id = $1`;
 
             let rs = await client.query(sql, [id]);
 
@@ -60,7 +69,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
 
         } catch (e) {
             console.log(e);
-            throw new InternalServerError('Unable to get all user ID reimbursements');
+            throw new InternalServerError('Unable to get all reimbursements by user ID');
         } finally {
             client && client.release();
         }
@@ -73,7 +82,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         try {
             client = await connectionPool.connect();
             
-            let sql = `${this.baseQuery} where ar.id = $1`;
+            let sql = `${this.baseQuery} where rb.id = $1`;
             
             let rs = await client.query(sql, [id]);
             
@@ -86,6 +95,25 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         }
     }
 
+    async getReimbByUniqueKey(key: string, val: any): Promise<Reimbursement> {
+        let client: PoolClient;
+        
+        try {
+            client = await connectionPool.connect();
+            
+            let sql = `${this.baseQuery} where rb.${key} = $1`;
+            
+            let rs = await client.query(sql, [val]);
+            
+            return mapReimbursementResultSet(rs.rows[0]);
+
+        } catch (e) {
+            throw new InternalServerError('Unable to get the reimbursement by unique key');
+        } finally {
+            client && client.release();
+        }
+    }
+
 // Saves a new reimbursement
     async save(newReimbursement: Reimbursement): Promise<Reimbursement> {
         let client: PoolClient;
@@ -93,20 +121,33 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         try {
             client = await connectionPool.connect();
             
+            let reimb_type_id = (await client.query('select reimb_type_id from ers_reimb_types where reimb_type = $1', [newReimbursement.reimb_type])).rows[0].reimb_type_id;
+            let author_id = (await client.query('select author_id from ers_users where username = $1', [newReimbursement.author])).rows[0].ers_user_id;
+            
             let sql = `
-                insert into app_reimbursements (amount, submitted, resolved, description, receipt, author_id, resolver_id, reimb_status_id, reimb_type_id) 
-                values ($1, $2, $3, $4, $5, $6, $7, $8, $9) returning id
+                insert into ers_reimbs (reimbname, password, first_name, last_name, email, reimb_role_id) 
+                values ($1, $2, $3, $4, $5, $6) returning reimb_id
             `;
             
-            let rs = await client.query(sql, [newReimbursement.amount, newReimbursement.submitted, 
-                                            null, newReimbursement.description, 
-                                            null, newReimbursement.author_id, 
-                                            null, newReimbursement.reimb_status_id, 
-                                            newReimbursement.reimb_type_id]);
-            return mapReimbursementResultSet(rs.rows[0]);
+            let rs = await client.query(sql,
+                [
+                    newReimbursement.reimb_id,
+                    newReimbursement.amount,
+                    newReimbursement.submitted,
+                    newReimbursement.resolved,
+                    newReimbursement.description,
+                    null,
+                    author_id,
+                    null,
+                    1,
+                    reimb_type_id]);
+
+            newReimbursement.reimb_id = rs.rows[0].ers_reimb_id;
+
+            return newReimbursement;
 
         } catch (e) {
-            throw new InternalServerError('Unable to save the new reimbursement');
+            throw new InternalServerError();
         } finally {
             client && client.release();
         }
@@ -119,17 +160,31 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         try {
             client = await connectionPool.connect();
             
-            let sql = `
-                update app_reimbursement
-                set amount = $2, description = $3, reimb_type_id = $4
-                where app_reimbursement.id = $1;
-            `;
+            let reimb_status_id = (await client.query('select reimb_status_id from ers_reimb_statuses where reimb_status = $1', [updatedReimbursement.reimb_status])).rows[0].reimb_status_id;
+            let reimb_type_id = (await client.query('select reimb_type_id from ers_reimb_types where reimb_type = $1', [updatedReimbursement.reimb_type])).rows[0].reimb_type_id;
+            let author_id = (await client.query('select author_id from ers_users where username = $1', [updatedReimbursement.author])).rows[0].ers_user_id;
+            let resolver_id = (await client.query('select resolver_id from ers_users where username = $1', [updatedReimbursement.author])).rows[0].ers_user_id;
 
-            await client.query(sql, [updatedReimbursement.amount, updatedReimbursement.description, updatedReimbursement.reimb_type_id]);
+            let sql = `update ers_reimbs set reimbname = $2 password = $3 first_name = $4 last_name = $5 email = $6  reimb_role_id = $7 where reimb_role_id = $1`;
+            
+            let rs = await client.query(sql,
+                [
+                    updatedReimbursement.reimb_id,
+                    updatedReimbursement.amount,
+                    updatedReimbursement.submitted,
+                    updatedReimbursement.resolved,
+                    updatedReimbursement.description,
+                    updatedReimbursement.receipt,
+                    author_id,
+                    resolver_id,
+                    reimb_status_id,
+                    reimb_type_id
+                ]);
+
             return true;
 
         } catch (e) {
-            throw new InternalServerError('Unable to update the reimbursement');
+            throw new InternalServerError();
         } finally {
             client && client.release();
         }
@@ -137,21 +192,19 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
     
 // Deletes a reimbursement by ID
     async deleteById(id: number): Promise<boolean> {
-        
         let client: PoolClient;
 
         try {
             client = await connectionPool.connect();
-            let sql = `
-                delete from app_reimbursements where id = $1
-            `;
 
-            await client.query(sql, [id]);
+            let sql = `delete from ers_reimbs where reimb_id = $1`;
+
+            let rs = await client.query(sql, [id]);
 
             return true;
 
         } catch (e) {
-            throw new InternalServerError('Unable to delete the reimbursement');
+            throw new InternalServerError();
         } finally {
             client && client.release();
         }
