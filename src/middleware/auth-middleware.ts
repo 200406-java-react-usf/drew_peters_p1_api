@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { AuthenticationError, AuthorizationError } from "../errors/errors";
 
-export const adminGuard = (req: Request, resp: Response, next) => {
+export const adminGuard = (req: Request, resp: Response, next: any) => {
 
     if (!req.session.principal) {
         resp.status(401).json(new AuthenticationError('No session found! Please login.'));

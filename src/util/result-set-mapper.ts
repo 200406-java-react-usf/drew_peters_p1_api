@@ -3,9 +3,7 @@ import { User } from "../models/user";
 import { ReimbursementSchema } from "./schemas";
 import { Reimbursement } from "../models/reimbursement";
 
-/**
- * 
- */
+// based on userschema, map user result sets with given values
 export function mapUserResultSet(resultSet: UserSchema): User {
     
     if (!resultSet) {
@@ -22,9 +20,8 @@ export function mapUserResultSet(resultSet: UserSchema): User {
         resultSet.role_name
     );
 }
-/**
- * 
- */
+
+// based on reimbursementschema, map reimbursement result sets with given values
 export function mapReimbursementResultSet(resultSet: ReimbursementSchema): Reimbursement {
     
     if (!resultSet) {

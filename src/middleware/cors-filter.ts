@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-export function corsFilter(req: Request, resp: Response, next) {
+export function corsFilter(req: Request, resp: Response, next: any) {
 
     resp.header('Access-Control-Allow-Origin', '*'); 
     resp.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept');

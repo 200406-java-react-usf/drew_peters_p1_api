@@ -66,7 +66,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         }
     }
 
-// Gets all items by the specified ID
+// Gets a reimbursement by the specified ID
     async getById(id: number): Promise<Reimbursement> {
         let client: PoolClient;
 
@@ -80,13 +80,13 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
             return mapReimbursementResultSet(rs.rows[0]);
         
         } catch (e) {
-            throw new InternalServerError('Unable to get reimbursement by ID');
+            throw new InternalServerError('Unable to get the reimbursement by ID');
         } finally {
             client && client.release();
         }
     }
 
-//Saves an order to a new unique ID
+// Saves a new reimbursement
     async save(newReimbursement: Reimbursement): Promise<Reimbursement> {
         let client: PoolClient;
 
@@ -106,13 +106,13 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
             return mapReimbursementResultSet(rs.rows[0]);
 
         } catch (e) {
-            throw new InternalServerError('Unable to save new reimbursement');
+            throw new InternalServerError('Unable to save the new reimbursement');
         } finally {
             client && client.release();
         }
     }
 
-//Updates an order based on a new order object
+// Updates a reimbursement, given value restricitions
     async update(updatedReimbursement: Reimbursement): Promise<boolean> {
         let client: PoolClient;
 
@@ -129,13 +129,13 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
             return true;
 
         } catch (e) {
-            throw new InternalServerError('Unable to update reimbursement');
+            throw new InternalServerError('Unable to update the reimbursement');
         } finally {
             client && client.release();
         }
     }
     
-//Deletes an order by its specified ID
+// Deletes a reimbursement by ID
     async deleteById(id: number): Promise<boolean> {
         
         let client: PoolClient;
@@ -151,7 +151,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
             return true;
 
         } catch (e) {
-            throw new InternalServerError('Unable to delete reimbursement');
+            throw new InternalServerError('Unable to delete the reimbursement');
         } finally {
             client && client.release();
         }
