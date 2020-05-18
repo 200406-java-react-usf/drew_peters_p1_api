@@ -1,6 +1,6 @@
-import { isValidId, isValidStrings, isValidObject, isPropertyOf } from "../util/validator";
-import { User } from "../models/user";
-// import { Reimbursement } from "../models/reimbursement";
+import { isValidId, isValidStrings, isValidObject, isPropertyOf, isValidStatus } from '../util/validator';
+import { User } from '../models/user';
+import { Reimbursement } from '../models/reimbursement';
 
 describe('validator', () => {
 
@@ -112,11 +112,13 @@ describe('validator', () => {
         expect.assertions(2);
 
         // Act
-        // let result1 = isValidObject(new Post(1, 'title', 'body', 1));
-        let result2 = isValidObject(new User(1, 'username', 'password', 'first', 'last', 'email', 'role'));
+        let date = new Date();
+        let mockReimb = new Reimbursement(1, 100, date, date, 'text', 'reciept', 'author-test', 'resv-test', 'pending', 'food');
+        let result1 = isValidObject(mockReimb); 
+        let result2 = isValidObject(new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', 'Admin'));
 
         // Assert
-        // expect(result1).toBe(true);
+        expect(result1).toBe(true);
         expect(result2).toBe(true);
 
     });
@@ -127,11 +129,13 @@ describe('validator', () => {
         expect.assertions(2);
 
         // Act
-        // let result1 = isValidObject(new Post(0, 'title', 'body', 1), 'id');
-        let result2 = isValidObject(new User(0, 'username', 'password', 'first', 'last', 'email', 'role'), 'id');
+        let date = new Date();
+        let mockReimb = new Reimbursement(1, 100, date, null, 'text', 'reciept', 'author-test', 'resv-test', 'pending', 'food');
+        let result1 = isValidObject(mockReimb, 'resolved'); 
+        let result2 = isValidObject(new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', 'Admin'));
 
         // Assert
-        // expect(result1).toBe(true);
+        expect(result1).toBe(true);
         expect(result2).toBe(true);
 
     });
@@ -142,11 +146,13 @@ describe('validator', () => {
         expect.assertions(2);
 
         // Act
-        // let result1 = isValidObject(new Post(1, '', 'body', 1));
-        let result2 = isValidObject(new User(1, 'username', 'password', '', 'last', 'email', 'role'));
+        let date = new Date();
+        let mockReimb = new Reimbursement(null, 100, date, date, 'text', 'receipt', 'author-test', 'resv-test', 'pending', 'food');
+        let result1 = isValidObject(mockReimb); 
+        let result2 = isValidObject(new User(null, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', 'Admin'));
 
         // Assert
-        // expect(result1).toBe(false);
+        expect(result1).toBe(false);
         expect(result2).toBe(false);
 
     });
@@ -157,11 +163,11 @@ describe('validator', () => {
         expect.assertions(2);
 
         // Act
-        // let result1 = isValidObject(new Post(1, '', 'body', 1), 'id');
-        let result2 = isValidObject(new User(1, 'username', 'password', '', 'last', 'email', 'role'), 'id');
+        let result1 = isValidObject(new User(1, null, 'password', 'Alice', 'Anderson', 'aanderson@revature.com', 'Admin')); 
+        let result2 = isValidObject(new User(1, 'aanderson', 'password', null, 'Anderson', 'aanderson@revature.com', 'Admin'));
 
         // Assert
-        // expect(result1).toBe(false);
+        expect(result1).toBe(false);
         expect(result2).toBe(false);
 
     });
@@ -172,14 +178,14 @@ describe('validator', () => {
         expect.assertions(3);
 
         // Act
-        let result1 = isPropertyOf('id', User);
+        let result1 = isPropertyOf('ers_user_id', User);
         let result2 = isPropertyOf('username', User);
-        // let result3 = isPropertyOf('title', Post);
+        let result3 = isPropertyOf('reimb_id', Reimbursement);
 
         // Assert
         expect(result1).toBe(true);
         expect(result2).toBe(true);
-        // expect(result3).toBe(true);
+        expect(result3).toBe(true);
 
     });
 
@@ -189,14 +195,14 @@ describe('validator', () => {
         expect.assertions(3);
 
         // Act
-        let result1 = isPropertyOf('not-real', User);
-        let result2 = isPropertyOf('fake', User);
-        // let result3 = isPropertyOf('titl', Post);
+        let result1 = isPropertyOf('test', User);
+        let result2 = isPropertyOf('test2', User);
+        let result3 = isPropertyOf('test', Reimbursement);
 
         // Assert
         expect(result1).toBe(false);
         expect(result2).toBe(false);
-        // expect(result3).toBe(false);
+        expect(result3).toBe(false);
 
     });
 
@@ -206,10 +212,10 @@ describe('validator', () => {
         expect.assertions(4);
 
         // Act
-        let result1 = isPropertyOf('shouldn\'t work', {x: 'non-constructable'});
-        let result2 = isPropertyOf('nope', 2);
-        let result3 = isPropertyOf('nuh-uh', false);
-        let result4 = isPropertyOf('won\'t work', Symbol('asd'));
+        let result1 = isPropertyOf('test', {x: 'nonConstructable'});
+        let result2 = isPropertyOf('test', 2);
+        let result3 = isPropertyOf('test', false);
+        let result4 = isPropertyOf('test', Symbol('test'));
 
         // Assert
         expect(result1).toBe(false);
@@ -219,4 +225,40 @@ describe('validator', () => {
 
     });
 
-})
+    test('should return true when isValidStatus is provided a int from 1 to 3', () => {
+
+        // Arrange
+        expect.assertions(3);
+
+        // Act
+        let result1 = isValidStatus("pending");
+        let result2 = isValidStatus("approved");
+        let result3 = isValidStatus("denied");
+
+        // Assert
+        expect(result1).toBe(true);
+        expect(result2).toBe(true);
+        expect(result3).toBe(true);
+
+    });
+
+    test('should return false when isValidStatus is provided something not 1, 2, 3', () => {
+
+        // Arrange
+        expect.assertions(4);
+
+        // Act
+        let result1 = isValidStatus("test");
+        let result2 = isValidStatus("4");
+        let result3 = isValidStatus(null);
+        let result4 = isValidStatus("");
+
+        // Assert
+        expect(result1).toBe(false);
+        expect(result2).toBe(false);
+        expect(result3).toBe(false);
+        expect(result4).toBe(false);  
+
+    });
+
+});

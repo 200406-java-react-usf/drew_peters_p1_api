@@ -5,7 +5,7 @@ export class Reimbursement {
     submitted: Date;
     resolved: Date;
     description: string;
-    receipt: number;
+    receipt: any;
     author: string;
     resolver: string;
     reimb_status: string;
@@ -16,7 +16,7 @@ export class Reimbursement {
                 submitted: Date, 
                 resolved: Date, 
                 description: string, 
-                receipt: number, 
+                receipt: any, 
                 author: string, 
                 resolver: string, 
                 reimb_status: string, 
