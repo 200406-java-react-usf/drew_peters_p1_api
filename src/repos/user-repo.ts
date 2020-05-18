@@ -9,17 +9,17 @@ export class UserRepository implements CrudRepository<User> {
 
     baseQuery = `
         select
-            eu.ers_user_id, 
-            eu.username, 
-            eu.password, 
-            eu.first_name,
-            eu.last_name,
-            eu.email,
+            ers_users.ers_user_id, 
+            ers_users.username, 
+            ers_users.password, 
+            ers_users.first_name,
+            ers_users.last_name,
+            ers_users.email,
             ur.role_name as role_name
-        from ers_users eu
+        from ers_users ers_users
         join ers_user_roles ur
         
-        on eu.user_role_id = ur.role_id
+        on ers_users.user_role_id = ur.role_id
     `;
 
 // Gets all users 
@@ -30,7 +30,7 @@ export class UserRepository implements CrudRepository<User> {
         try {
             client = await connectionPool.connect();
             
-            let sql = `${this.baseQuery} order by eu.ers_user_id`;
+            let sql = `${this.baseQuery} order by ers_users.ers_user_id`;
             
             let rs = await client.query(sql);
             
@@ -52,7 +52,7 @@ export class UserRepository implements CrudRepository<User> {
         try {
             client = await connectionPool.connect();
             
-            let sql = `${this.baseQuery} where eu.ers_user_id = $1`;
+            let sql = `${this.baseQuery} where ers_users.ers_user_id = $1`;
             
             let rs = await client.query(sql, [id]);
             
@@ -75,7 +75,7 @@ export class UserRepository implements CrudRepository<User> {
         try {
             client = await connectionPool.connect();
             
-            let sql = `${this.baseQuery} where eu.${key} = $1`;
+            let sql = `${this.baseQuery} where ers_users.${key} = $1`;
             
             let rs = await client.query(sql, [val]);
             
@@ -98,7 +98,7 @@ export class UserRepository implements CrudRepository<User> {
         try{
             client = await connectionPool.connect();
 
-            let sql = `${this.baseQuery} where eu.username = $1`;
+            let sql = `${this.baseQuery} where ers_users.username = $1`;
 
             let rs = await client.query(sql, [un]);
 
