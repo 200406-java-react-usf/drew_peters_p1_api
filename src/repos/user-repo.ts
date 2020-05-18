@@ -18,6 +18,7 @@ export class UserRepository implements CrudRepository<User> {
             ur.role_name as role_name
         from ers_users eu
         join ers_user_roles ur
+        
         on eu.user_role_id = ur.role_id
     `;
 
@@ -141,7 +142,7 @@ export class UserRepository implements CrudRepository<User> {
         try {
             client = await connectionPool.connect();
             
-            let sql = `${this.baseQuery} where eu.username = $1 and eu.password = $2`;
+            let sql = `${this.baseQuery} where ers_users.username = $1 and ers_users.password = $2`;
             
             let rs = await client.query(sql, [un, pw]);
             
