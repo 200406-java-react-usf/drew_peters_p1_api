@@ -95,25 +95,6 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         }
     }
 
-    async getReimbByUniqueKey(key: string, val: any): Promise<Reimbursement> {
-        let client: PoolClient;
-        
-        try {
-            client = await connectionPool.connect();
-            
-            let sql = `${this.baseQuery} where rb.${key} = $1`;
-            
-            let rs = await client.query(sql, [val]);
-            
-            return mapReimbursementResultSet(rs.rows[0]);
-
-        } catch (e) {
-            throw new InternalServerError('Unable to get the reimbursement by unique key');
-        } finally {
-            client && client.release();
-        }
-    }
-
 // Saves a new reimbursement
     async save(newReimbursement: Reimbursement): Promise<Reimbursement> {
         let client: PoolClient;

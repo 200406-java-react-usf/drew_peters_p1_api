@@ -3,7 +3,8 @@ import { ReimbursementRepository }  from '../repos/reimbursement-repo';
 import { 
     isValidId, 
     isValidObject, 
-    isEmptyObject 
+    isEmptyObject,
+    isValidStatus 
 } from '../util/validator';
 import { 
     BadRequestError, 
@@ -95,45 +96,21 @@ export class ReimbursementService {
  */
     async updateReimbursement(updatedReimbursement: Reimbursement): Promise<boolean> {
         
-        if (!isValidObject(updatedReimbursement, 'id') || !isValidId(updatedReimbursement.reimb_id)) {
-            throw new BadRequestError('Invalid reimbursement provided.');
+        try {
+            if (!isValidId(updatedReimbursement.reimb_id)) {
+                throw new BadRequestError();
+            }
+            if (!isValidObject(updatedReimbursement)) {
+                throw new BadRequestError();
+            }
+            if (!isValidStatus(updatedReimbursement.reimb_status)) {
+                throw new BadRequestError();
+            }
+            return await this.reimbursementRepo.update(updatedReimbursement);
+        } catch (e) {
+            throw e;
         }
 
-        let reimbToUpdate = await this.getReimbursementById(updatedReimbursement.reimb_id);
-
-        if(updatedReimbursement.reimb_status !== 1){
-            throw new ResourceConflictError('Cannot update a non-pending reimbursment');
-        }
-
-        if(updatedReimbursement.author !== reimbToUpdate.author){
-            throw new ResourceConflictError('Cannot update author ID');
-        }
-
-        if(updatedReimbursement.reimb_id !== reimbToUpdate.reimb_id){
-            throw new ResourceConflictError('Cannot update reimbursment ID');
-        }
-
-        if(updatedReimbursement.reimb_status !== reimbToUpdate.reimb_status){
-            throw new ResourceConflictError('Cannot update status of reimbursment');
-        }
-
-        if(updatedReimbursement.receipt !== reimbToUpdate.receipt){
-            throw new ResourceConflictError('Cannot update receipt of reimbursment');
-        }
-
-        if(updatedReimbursement.resolved !== reimbToUpdate.resolved){
-            throw new ResourceConflictError('Cannot update resolved time');
-        }
-
-        if(updatedReimbursement.resolver !== reimbToUpdate.resolver){
-            throw new ResourceConflictError('Cannot update resolver ID');
-        }
-
-        if(updatedReimbursement.submitted !== reimbToUpdate.submitted){
-            throw new ResourceConflictError('Cannot update submitted time');
-        }
-
-        return await this.reimbursementRepo.update(updatedReimbursement);
     }
 
 /**
