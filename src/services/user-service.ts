@@ -22,6 +22,31 @@ export class UserService {
         this.userRepo = userRepo;
     }
 
+    async authenticateUser(un: string, pw: string): Promise<User> {
+
+        try {
+
+            if (!isValidStrings(un, pw)) {
+                throw new BadRequestError();
+            }
+
+            let authUser: User;
+            
+            authUser = await this.userRepo.getUserByCredentials(un, pw);
+           
+
+            if (isEmptyObject(authUser)) {
+                throw new AuthenticationError('Bad credentials provided.');
+            }
+
+            return this.removePassword(authUser);
+
+        } catch (e) {
+            throw e;
+        }
+
+    }
+
     async getAllUsers(): Promise<User[]> {
 
         let users = await this.userRepo.getAll();
@@ -158,31 +183,6 @@ export class UserService {
 
     }
     
-    async authenticateUser(un: string, pw: string): Promise<User> {
-
-        try {
-
-            if (!isValidStrings(un, pw)) {
-                throw new BadRequestError();
-            }
-
-            let authUser: User;
-            
-            authUser = await this.userRepo.getUserByCredentials(un, pw);
-           
-
-            if (isEmptyObject(authUser)) {
-                throw new AuthenticationError('Bad credentials provided.');
-            }
-
-            return this.removePassword(authUser);
-
-        } catch (e) {
-            throw e;
-        }
-
-    }
-
     private async isUsernameAvailable(username: string): Promise<boolean> {
 
         try {
