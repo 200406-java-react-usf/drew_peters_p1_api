@@ -206,6 +206,125 @@ describe('userRepo', () => {
         expect(result instanceof User).toBe(true);
 
     });
+
+    test('should resolve to a User object when getByUsername retrieves a record from data source', async () => {
+
+        // Arrange
+        expect.hasAssertions();
+
+        let mockUser = new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', 'Admin');
+        (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+
+        // Act
+        let result = await sut.getByUsername('aanderson');
+
+        // Assert
+        expect(result).toBeTruthy();
+        expect(result instanceof User).toBe(true);
+
+    });
+
+    test ('should resolve to an empty array when getByUsername retrieves a record from data source', async () => {
+
+        // Arrange
+        expect.hasAssertions();
+        
+        (mockConnect as jest.Mock).mockImplementation(() => {
+            return {
+                query: jest.fn().mockImplementation(() => { return { rows: [] }; }), 
+                release: jest.fn()
+            };
+        });
+
+        // Act
+        let result = await sut.getByUsername('aanderson');
+
+        // Assert
+        expect(result).toBeTruthy();
+        expect(result instanceof User).toBe(true);
+
+    });
+
+    test('should throw InternalServerError when getByUsername() is called but query is unsuccesful', async () => {
+
+        // Arrange
+        expect.hasAssertions();
+        let mockUser = new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', 'Admin');
+        (mockConnect as jest.Mock).mockImplementation( () => {
+            return {
+                query: jest.fn().mockImplementation( () => { return false; }),
+                release: jest.fn()
+            };
+        });
+
+        // Act
+        try {
+            await sut.getByUsername(mockUser.username);
+        } catch (e) {
+            // Assert
+            expect(e instanceof InternalServerError).toBe(true);
+        }
+    });
+
+    // test('should resolve to a User object when getByRole retrieves a record from data source', async () => {
+
+    //     // Arrange
+    //     expect.hasAssertions();
+
+    //     let mockUser = new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', 'Admin');
+    //     (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+
+    //     // Act
+    //     let result = await sut.getByRole('Admin');
+
+    //     // Assert
+    //     expect(result).toBeTruthy();
+    //     expect(result instanceof User).toBe(true);
+
+    // });
+
+    // test ('should resolve to an empty array when getByRole retrieves a record from data source', async () => {
+
+    //     // Arrange
+    //     expect.hasAssertions();
+        
+    //     (mockConnect as jest.Mock).mockImplementation(() => {
+    //         return {
+    //             query: jest.fn().mockImplementation(() => { return { rows: [] }; }), 
+    //             release: jest.fn()
+    //         };
+    //     });
+
+    //     // Act
+    //     let result = await sut.getByRole('Admin');
+
+    //     // Assert
+    //     expect(result).toBeTruthy();
+    //     expect(result instanceof User).toBe(true);
+
+    // });
+
+    // test('should throw InternalServerError when getByRole() is called but query is unsuccesful', async () => {
+
+    //     // Arrange
+    //     expect.hasAssertions();
+    //     let mockUser = new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', 'Admin');
+    //     (mockConnect as jest.Mock).mockImplementation( () => {
+    //         return {
+    //             query: jest.fn().mockImplementation( () => { return false; }),
+    //             release: jest.fn()
+    //         };
+    //     });
+
+    //     // Act
+    //     try {
+    //         await sut.getByRole(mockUser.role_name);
+    //     } catch (e) {
+    //         // Assert
+    //         expect(e instanceof InternalServerError).toBe(true);
+    //     }
+    // });
+
     test('should InternalServerError with no connection', async () => {
 
         // Arrange
@@ -229,6 +348,7 @@ describe('userRepo', () => {
 
 
     });
+
     test('should resolve to a User object when getUserByCredentials retrieves a record from data source', async () => {
 
         // Arrange
@@ -245,6 +365,7 @@ describe('userRepo', () => {
         expect(result instanceof User).toBe(true);
 
     });
+
     test('should InternalServerError with no connection', async () => {
 
         // Arrange
@@ -266,6 +387,7 @@ describe('userRepo', () => {
 
         }
     });
+
     test('should resolve to an empty array when getUserByCredentials retrieves a record from data source', async () => {
 
         // Arrange
@@ -320,6 +442,7 @@ describe('userRepo', () => {
         expect(result).toBeTruthy();
         expect(result instanceof User).toBe(true);
     });
+    
     test('should InternalServerError with no connection', async () => {
 
         // Arrange
@@ -357,28 +480,6 @@ describe('userRepo', () => {
         expect(result).toBeTruthy();
         expect(result).toBe(true);
 
-    });
-
-    test('should InternalServerError with no connection', async () => {
-
-        // Arrange
-        expect.hasAssertions();
-        let mockUser = new User(6, 'banderson', 'password', 'Betty', 'Anderson', 'banderson@revature.com', 'Admin');
-
-        (mockConnect as jest.Mock).mockImplementation(() => {
-            return {
-                query: jest.fn().mockImplementation(() => { return null; }), 
-                release: jest.fn()
-            };
-        });
-        try{
-        // Act
-        await sut.update(mockUser);
-        }
-        catch(e){
-        // Assert
-        expect(e instanceof InternalServerError).toBe(true);
-        }
     });
 
     test('should resolve to true when deleteById deletes a record on the data source', async () => {

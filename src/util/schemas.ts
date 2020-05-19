@@ -1,6 +1,3 @@
-/**
- * 
- */
 export interface UserSchema {
     ers_user_id: number,
     username: string,
@@ -10,9 +7,6 @@ export interface UserSchema {
     email: string,
     role_name: string
 }
-/**
- * 
- */
 export interface ReimbursementSchema {
     reimb_id: number,
     amount: number,

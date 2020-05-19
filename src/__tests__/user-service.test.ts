@@ -215,32 +215,6 @@ describe('userService', () => {
         expect(result.username).toBe('aanderson');
     });
 
-    test('should resolve to User when getUserByUniqueKey is given a valid an known key(id)', async () => {
-
-        // Arrange
-        expect.assertions(2);
-        Validator.isPropertyOf = jest.fn().mockReturnValue(true);
-        Validator.isValidStrings = jest.fn().mockReturnValue(true);
-        Validator.isEmptyObject = jest.fn().mockReturnValue(false);
-        Validator.isValidId = jest.fn().mockReturnValue(true);
-        mockRepo.getById = jest.fn().mockReturnValue(mockUsers[0]);
-
-        mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
-            return new Promise<User>((resolve) => {
-                resolve(mockUsers.find(user => user[key] === val));
-            });
-        });
-
-        // Act
-        let query = {
-            ers_user_id: 1
-        }
-        let result = await sut.getUserByUniqueKey(query);
-
-        // Assert
-        expect(result).toBeTruthy();
-        expect(result.ers_user_id).toBe(1);
-    });
     test('should reject with BadRequestError if invalid key', async () => {
 
         // Arrange
@@ -260,6 +234,7 @@ describe('userService', () => {
         }
 
     });
+
     test('should reject with BadRequestError if repo return false', async () => {
 
         // Arrange
@@ -282,6 +257,7 @@ describe('userService', () => {
         }
 
     });
+
     test('should reject with ResourceNotFoundError if valid key but no result', async () => {
 
         // Arrange
@@ -308,6 +284,7 @@ describe('userService', () => {
 
 
     });
+
     test('should resolve to User when authenticateUser is given a valid un, pw', async () => {
         // Arrange
         expect.assertions(2);
@@ -325,6 +302,7 @@ describe('userService', () => {
         expect(result).toBeTruthy();
         expect(result.ers_user_id).toBe(1);
     });
+
     test('should reject with BadRequestError to User when authenticateUser is given a invalid un, pw', async () => {
         // Arrange
         expect.hasAssertions();
@@ -338,6 +316,7 @@ describe('userService', () => {
             expect(e instanceof BadRequestError).toBe(true);
         }
     });
+
     test('should reject with AuthError User when authenticateUser if cannot find user', async () => {
         // Arrange
         expect.hasAssertions();
@@ -354,6 +333,7 @@ describe('userService', () => {
             expect(e instanceof AuthenticationError).toBe(true);
         }
     });
+
     test('should resolve to User when addNewUser', async () => {
         // Arrange
         expect.assertions(2);
@@ -375,6 +355,7 @@ describe('userService', () => {
         expect(result).toBeTruthy();
         expect(mockUsers.length).toBe(6);
     });
+
     test('should return bad request to User when addNewUser get bad user', async () => {
         // Arrange
         expect.hasAssertions();
@@ -395,6 +376,7 @@ describe('userService', () => {
 
         }
     });
+
     test('should return bad request to User when addNewUser get dup username', async () => {
         // Arrange
         expect.hasAssertions();
@@ -414,6 +396,7 @@ describe('userService', () => {
             expect(e instanceof ResourcePersistenceError).toBe(true);         
         }
     });
+
     test('should return bad request to User when addNewUser get dup email', async () => {
         // Arrange
         expect.hasAssertions();
@@ -436,28 +419,12 @@ describe('userService', () => {
             
         }
     });
-    test('should resolve to User when updateUser', async () => {
-        // Arrange
-        expect.hasAssertions();
-
-        Validator.isValidObject = jest.fn().mockReturnValue(true);
-        mockRepo.update =  jest.fn().mockReturnValue(mockUsers[0]);
-        // Act
-        // id, name , value
-    try{
-        let newUser = new User(6, 'test', 'password', 'test', 'test', 'test@revature.com', 'User')
-        await sut.addNewUser(newUser);
-        // Assert
-        expect(newUser).toBeTruthy();
-    } catch (e) {
-            
-    }
-    });
+    
     test('should return bad request to User when updateUser get bad user', async () => {
         // Arrange
         expect.hasAssertions();
 
-        Validator.isValidObject = jest.fn().mockReturnValue(false);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
         mockRepo.update =  jest.fn().mockReturnValue(mockUsers[5]);
 
         // Act
