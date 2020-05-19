@@ -36,6 +36,8 @@ export class UserRepository implements CrudRepository<User> {
             return mapUserResultSet(rs.rows[0]);
         
         } catch (e) {
+            console.log(e);
+            
             throw new InternalServerError('Unable to retrieve the user by credentials');
         } finally {
             client && client.release();
@@ -164,7 +166,7 @@ export class UserRepository implements CrudRepository<User> {
             client = await connectionPool.connect();
 
             // WIP: hacky fix since we need to make two DB calls
-            let roleId = (await client.query('select role_id from ers_user_roles where name = $1', [newUser.role_name])).rows[0].role_id;
+            let roleId = (await client.query('select role_id from ers_user_roles where role_name = $1', [newUser.role_name])).rows[0].role_id;
             
             let sql = `
                 insert into ers_users (username, password, first_name, last_name, email, user_role_id) 
