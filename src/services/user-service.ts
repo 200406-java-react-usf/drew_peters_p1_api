@@ -10,9 +10,8 @@ import {
 import { 
     BadRequestError, 
     ResourceNotFoundError, 
-    NotImplementedError, 
     ResourcePersistenceError, 
-    AuthenticationError 
+    AuthenticationError
 } from "../errors/errors";
 
 
@@ -21,7 +20,10 @@ export class UserService {
     constructor(private userRepo: UserRepository) {
         this.userRepo = userRepo;
     }
-
+    
+/**
+ * 
+ */
     async authenticateUser(un: string, pw: string): Promise<User> {
 
         try {
@@ -46,7 +48,10 @@ export class UserService {
         }
 
     }
-
+    
+/**
+ * 
+ */
     async getAllUsers(): Promise<User[]> {
 
         let users = await this.userRepo.getAll();
@@ -59,6 +64,9 @@ export class UserService {
 
     }
 
+/**
+ * 
+ */
     async getUserById(id: number): Promise<User> {
 
         if (!isValidId(id)) {
@@ -75,9 +83,11 @@ export class UserService {
 
     }
 
+/**
+ * 
+ */
     async getUserByUniqueKey(queryObj: any): Promise<User> {
 
-        // we need to wrap this up in a try/catch in case errors are thrown for our awaits
         try {
 
             let queryKeys = Object.keys(queryObj);
@@ -86,16 +96,13 @@ export class UserService {
                 throw new BadRequestError();
             }
 
-            // we will only support single param searches (for now)
             let key = queryKeys[0];
             let val = queryObj[key];
 
-            // if they are searching for a user by id, reuse the logic we already have
             if (key === 'id') {
                 return await this.getUserById(+val);
             }
 
-            // ensure that the provided key value is valid
             if(!isValidStrings(val)) {
                 throw new BadRequestError();
             }
@@ -113,6 +120,9 @@ export class UserService {
         }
     }
 
+/**
+ * 
+ */
     async addNewUser(newUser: User): Promise<User> {
         
         try {
@@ -133,7 +143,7 @@ export class UserService {
                 throw new  ResourcePersistenceError('The provided email is already taken.');
             }
 
-            newUser.role_name = 'User'; // all new registers have 'User' role by default
+            newUser.role_name = 'Employee'; // all new registers have 'Employee' role by default
             const persistedUser = await this.userRepo.save(newUser);
 
             return this.removePassword(persistedUser);
@@ -144,13 +154,15 @@ export class UserService {
 
     }
 
+/**
+ * 
+ */
     async updateUser(updatedUser: User): Promise<boolean> {
         
         if (!isValidObject(updatedUser)) {
             throw new BadRequestError();
         }
 
-        // will throw an error if no user is found with provided id
         let toUpdateUser = await this.getUserById(updatedUser.ers_user_id);
 
         let isAvailable = await this.isUsernameAvailable(updatedUser.username);
@@ -168,13 +180,15 @@ export class UserService {
         return true;
     }
 
+/**
+ * 
+ */
     async deleteById(id: number): Promise<boolean> {
         
         if (!isValidObject(id)) {
             throw new BadRequestError();
         }
 
-        // will throw an error if no user is found with provided id
         await this.getUserById(id);
 
         await this.userRepo.deleteById(id);
@@ -182,7 +196,10 @@ export class UserService {
         return true;
 
     }
-    
+
+/**
+ * 
+ */
     private async isUsernameAvailable(username: string): Promise<boolean> {
 
         try {
@@ -197,6 +214,9 @@ export class UserService {
 
     }
 
+/**
+ * 
+ */
     private async isEmailAvailable(email: string): Promise<boolean> {
         
         try {
@@ -210,6 +230,9 @@ export class UserService {
         return false;
     }
 
+/**
+ * 
+ */
     private removePassword(user: User): User {
         if(!user || !user.password) return user;
         let usr = {...user};

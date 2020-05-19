@@ -21,7 +21,7 @@ jest.mock('../repos/Reimbursement-repo', () => {
 describe('ReimbursementService', () => {
 
     let sut: ReimbursementService;
-    let mockRepo;
+    let mockRepo: any;
     let date = new Date();
     let mockReimbursements = [
         new Reimbursement(1, 100, date, date, 'text', 'reciept', 'author-test', 'resv-test', 'pending', 'food'),
@@ -48,7 +48,7 @@ describe('ReimbursementService', () => {
         sut = new ReimbursementService(mockRepo);
 
     });
-    // get all -no resource error
+
     test('should resolve to getAllReimbursements[] (without passwords) when getAllgetAllReimbursements() successfully retrieves getAllReimbursements from the data source', async () => {
 
         // Arrange
@@ -185,7 +185,6 @@ describe('ReimbursementService', () => {
 
     });
 
-    // submit save - bad req
     test('should save to Reimbursement', async () => {
 
         // Arrange
@@ -206,6 +205,7 @@ describe('ReimbursementService', () => {
         expect(result).toBeTruthy();
         expect(result.reimb_id).toBe(6);
     });
+   
     test('should reject with BadRequestError if invalid Reimbursement', async () => {
 
         // Arrange
@@ -231,7 +231,7 @@ describe('ReimbursementService', () => {
         }
 
     });
-    // approve or deny - bad req, no return
+
     test('should update to Reimbursement approve', async () => {
 
         // Arrange
@@ -271,6 +271,7 @@ describe('ReimbursementService', () => {
         }
 
     });
+
     test('should reject with ResourcePersistenceError if invalid status', async () => {
 
         // Arrange
@@ -292,6 +293,7 @@ describe('ReimbursementService', () => {
         }
 
     });
+    
     test('should reject with ResourcePersistenceError if invalid Reimbursement', async () => {
 
         // Arrange

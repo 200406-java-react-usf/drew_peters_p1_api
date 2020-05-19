@@ -9,19 +9,40 @@ export class UserRepository implements CrudRepository<User> {
 
     baseQuery = `
         select
-            ers_users.ers_user_id, 
-            ers_users.username, 
-            ers_users.password, 
-            ers_users.first_name,
-            ers_users.last_name,
-            ers_users.email,
+            eu.ers_user_id, 
+            eu.username, 
+            eu.password, 
+            eu.first_name,
+            eu.last_name,
+            eu.email,
             ur.role_name as role_name
-        from ers_users ers_users
+        from ers_users eu
         join ers_user_roles ur
-        
-        on ers_users.user_role_id = ur.role_id
+        on eu.user_role_id = ur.role_id
     `;
 
+// Gets a user by credentials
+    async getUserByCredentials(un: string, pw: string) {
+            
+        let client: PoolClient;
+
+        try {
+            client = await connectionPool.connect();
+            
+            let sql = `${this.baseQuery} where eu.username = $1 and eu.password = $2`;
+            
+            let rs = await client.query(sql, [un, pw]);
+            
+            return mapUserResultSet(rs.rows[0]);
+        
+        } catch (e) {
+            throw new InternalServerError('Unable to retrieve the user by credentials');
+        } finally {
+            client && client.release();
+        }
+
+    }
+    
 // Gets all users 
     async getAll(): Promise<User[]> {
 
@@ -30,7 +51,7 @@ export class UserRepository implements CrudRepository<User> {
         try {
             client = await connectionPool.connect();
             
-            let sql = `${this.baseQuery} order by ers_users.ers_user_id`;
+            let sql = `${this.baseQuery} order by eu.ers_user_id`;
             
             let rs = await client.query(sql);
             
@@ -52,7 +73,7 @@ export class UserRepository implements CrudRepository<User> {
         try {
             client = await connectionPool.connect();
             
-            let sql = `${this.baseQuery} where ers_users.ers_user_id = $1`;
+            let sql = `${this.baseQuery} where eu.ers_user_id = $1`;
             
             let rs = await client.query(sql, [id]);
             
@@ -75,7 +96,7 @@ export class UserRepository implements CrudRepository<User> {
         try {
             client = await connectionPool.connect();
             
-            let sql = `${this.baseQuery} where ers_users.${key} = $1`;
+            let sql = `${this.baseQuery} where eu.${key} = $1`;
             
             let rs = await client.query(sql, [val]);
             
@@ -98,11 +119,11 @@ export class UserRepository implements CrudRepository<User> {
         try{
             client = await connectionPool.connect();
 
-            let sql = `${this.baseQuery} where ers_users.username = $1`;
+            let sql = `${this.baseQuery} where eu.username = $1`;
 
             let rs = await client.query(sql, [un]);
 
-            return rs.rows[0];
+            return mapUserResultSet(rs.rows[0]);
 
         } catch(e){
             throw new InternalServerError('Unable to retrieve the user by username');
@@ -113,16 +134,16 @@ export class UserRepository implements CrudRepository<User> {
     }
 
 // Gets a user by role
-    async getByRole(role_id: number): Promise<User[]>{
+    async getByRole(role_name: string): Promise<User[]>{
 
         let client: PoolClient;
 
         try{
             client = await connectionPool.connect();
 
-            let sql = 'select * from ers_users where user_role_id = $1';
+            let sql = `${this.baseQuery} where role_name = $1`;
 
-            let rs = await client.query(sql, [role_id]);
+            let rs = await client.query(sql, [role_name]);
 
             return rs.rows;
 
@@ -132,28 +153,6 @@ export class UserRepository implements CrudRepository<User> {
             client && client.release();
         }
 
-    }
-
-// Gets a user by credentials
-    async getUserByCredentials(un: string, pw: string) {
-        
-        let client: PoolClient;
-
-        try {
-            client = await connectionPool.connect();
-            
-            let sql = `${this.baseQuery} where ers_users.username = $1 and ers_users.password = $2`;
-            
-            let rs = await client.query(sql, [un, pw]);
-            
-            return mapUserResultSet(rs.rows[0]);
-        
-        } catch (e) {
-            throw new InternalServerError('Unable to retrieve the user by credentials');
-        } finally {
-            client && client.release();
-        }
-    
     }
 
 // Saves a new user
@@ -206,7 +205,6 @@ export class UserRepository implements CrudRepository<User> {
         `;
         await client.query(sql, [updatedUser.ers_user_id, updatedUser.username, updatedUser.password, updatedUser.first_name, updatedUser.last_name]);
         
-            
             return true;
         
         } catch (e) {
@@ -227,7 +225,9 @@ export class UserRepository implements CrudRepository<User> {
                     where ers_user_id = $1
                 `;
                 await client.query(sql, [id]);
+
                 return true;
+
             } catch (e) {
                 console.log(e);
                 throw new InternalServerError('Unable to delete the user');
