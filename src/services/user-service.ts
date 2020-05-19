@@ -143,9 +143,9 @@ export class UserService {
                 throw new  ResourcePersistenceError('The provided email is already taken.');
             }
 
-            newUser.role_name = 'Employee'; // all new registers have 'Employee' role by default
+            newUser.role_name = 'employee'; // all new registers have 'employee' role by default
             const persistedUser = await this.userRepo.save(newUser);
-
+        
             return this.removePassword(persistedUser);
 
         } catch (e) {

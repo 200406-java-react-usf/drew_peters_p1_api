@@ -4,7 +4,8 @@ import {
     isValidId, 
     isValidObject, 
     isEmptyObject,
-    isValidStatus 
+    isValidStatus,
+    isPropertyOf 
 } from '../util/validator';
 import { 
     BadRequestError, 
@@ -74,6 +75,36 @@ export class ReimbursementService {
 /**
  * 
  */
+    async getReimbursementByUniqueKey(queryObj: any): Promise<Reimbursement> {
+
+        try {
+            let queryKeys = Object.keys(queryObj);
+            if(!queryKeys.every(key => isPropertyOf(key, Reimbursement))) {
+                throw new BadRequestError();
+            }
+            let key = queryKeys[0];
+            let val = queryObj[key];
+
+            if (key === 'reimb_id') {
+                return await this.getReimbursementById(+val);
+            }
+
+            let reimbursement = await this.reimbursementRepo.getReimbursementByUniqueKey(key, val);
+
+            if (isEmptyObject(reimbursement)) {
+                throw new ResourceNotFoundError();
+            }
+
+            return reimbursement;
+
+        } catch (e) {
+            throw e;
+        }
+    }
+
+/**
+ * 
+ */
     async addNewReimbursement(newReimbursement: Reimbursement): Promise<Reimbursement> {
             
         try {
@@ -122,7 +153,8 @@ export class ReimbursementService {
             throw new BadRequestError();
         }
 
-        return await this.reimbursementRepo.deleteById(id);
+        await this.reimbursementRepo.deleteById(id);
+        return true;
 
     }
 }

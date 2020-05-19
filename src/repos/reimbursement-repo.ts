@@ -31,6 +31,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
     AND rb.resolver_id = eu.ers_user_id
     `;
 
+
 // Gets all items 
     async getAll(): Promise<Reimbursement[]> {
 
@@ -90,6 +91,26 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         
         } catch (e) {
             throw new InternalServerError('Unable to get the reimbursement by ID');
+        } finally {
+            client && client.release();
+        }
+    }
+
+// Gets a reimbursement by a unique key
+    async getReimbursementByUniqueKey(key: string, val: any): Promise<Reimbursement> {
+        let client: PoolClient;
+
+        try {
+            client = await connectionPool.connect();
+
+            let sql = `${this.baseQuery} where rb.${key} = $1`;
+
+            let rs = await client.query(sql, [val]);
+
+            return mapReimbursementResultSet(rs.rows[0]);
+            
+        } catch (e) {
+            throw new InternalServerError();
         } finally {
             client && client.release();
         }
