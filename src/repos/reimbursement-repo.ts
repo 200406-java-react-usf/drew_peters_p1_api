@@ -9,31 +9,19 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
 
     baseQuery =  `
     select
-        rb.ers_reimb_id, 
-        rb.amount, 
-        rb.submitted,
-        rb.resolved,
-        rb.reciept,
-        eu.username as rb.author_id,
-        eu.username as rb.resolver_id,
-        rs.reimb_statuses as reimb_status_id,
-        rt.reimb_types as reimb_type_id
-    from ers_reimbs rb
-    
-    INNER JOIN ers_reimb_types rt
-    ON rb.reimb_type_id =rt.reimb_type_id
-
-    INNER JOIN ers_reimb_statuses rs
-    ON rb.reimb_status_id = rs.reimb_status_id
-
-    INNER JOIN ers_users eu
-    ON rb.author_id = eu.ers_user_id
-    AND rb.resolver_id = eu.ers_user_id
+        *
+    from
+        ers_reimbursements er
+        inner join ers_reimb_types 
+        on er.reimb_type_id = ers_reimb_types.reimb_type_id
+        inner join ers_reimb_statuses 
+        on er.reimb_status_id = ers_reimb_statuses.reimb_status_id
     `;
 
 
 // Gets all items 
     async getAll(): Promise<Reimbursement[]> {
+        console.log('Made it this far in Repos');
 
         let client: PoolClient;
 
@@ -41,11 +29,13 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
             client = await connectionPool.connect();
             
             let sql = `${this.baseQuery}`;
+            console.log('Made it this far in Repos 2');
             
             let rs = await client.query(sql);
             
+            console.log(rs.rows.map(mapReimbursementResultSet));
             return rs.rows.map(mapReimbursementResultSet);
-        
+            
         } catch (e) {
             console.log(e);
             throw new InternalServerError('Unable to get all reimbursements');
@@ -62,7 +52,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         try {
             client = await connectionPool.connect();
 
-            let sql = `${this.baseQuery} where rb.author_id = $1`;
+            let sql = `${this.baseQuery} where er.author_id = $1`;
 
             let rs = await client.query(sql, [id]);
 
@@ -83,7 +73,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         try {
             client = await connectionPool.connect();
             
-            let sql = `${this.baseQuery} where rb.id = $1`;
+            let sql = `${this.baseQuery} where er.reimb_id = $1`;
             
             let rs = await client.query(sql, [id]);
             
@@ -103,14 +93,14 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         try {
             client = await connectionPool.connect();
 
-            let sql = `${this.baseQuery} where rb.${key} = $1`;
+            let sql = `${this.baseQuery} where er.${key} = $1`;
 
             let rs = await client.query(sql, [val]);
 
             return mapReimbursementResultSet(rs.rows[0]);
             
         } catch (e) {
-            throw new InternalServerError();
+            throw new InternalServerError('Unable to get reimbursement by Unique Key');
         } finally {
             client && client.release();
         }
@@ -127,7 +117,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
             let author_id = (await client.query('select author_id from ers_users where username = $1', [newReimbursement.author])).rows[0].ers_user_id;
             
             let sql = `
-                insert into ers_reimbs (reimbname, password, first_name, last_name, email, reimb_role_id) 
+                insert into ers_reimbursements (amount, submitted, resolved, description, author_id, reimb_type_id) 
                 values ($1, $2, $3, $4, $5, $6) returning reimb_id
             `;
             
@@ -149,7 +139,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
             return newReimbursement;
 
         } catch (e) {
-            throw new InternalServerError();
+            throw new InternalServerError('Unable to save new reimbursement');
         } finally {
             client && client.release();
         }
@@ -186,7 +176,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
             return true;
 
         } catch (e) {
-            throw new InternalServerError();
+            throw new InternalServerError('Unable to update reimbursement');
         } finally {
             client && client.release();
         }
@@ -206,7 +196,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
             return true;
 
         } catch (e) {
-            throw new InternalServerError();
+            throw new InternalServerError('Unable to delete reimbursement by ID');
         } finally {
             client && client.release();
         }

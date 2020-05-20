@@ -23,13 +23,14 @@ export class ReimbursementService {
  * 
  */
     async getAllReimbursements(): Promise<Reimbursement[]> {
-
+        console.log('Made it this far in Services');
+        
         let reimbursements = await this.reimbursementRepo.getAll();
 
         if (reimbursements.length == 0) {
             throw new ResourceNotFoundError();
         }
-
+        
         return reimbursements;
     }
 
