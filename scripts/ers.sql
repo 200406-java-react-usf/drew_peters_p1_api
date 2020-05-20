@@ -37,7 +37,7 @@ create table ers_reimbursements (
     amount decimal(6, 2) not null,
     submitted timestamp not null,
     resolved timestamp not null,
-    description text not null,
+    description varchar(256) not null,
     reciept BYTEA,
     author_id int not null,
     resolver_id int,
@@ -51,6 +51,17 @@ create table ers_reimbursements (
 );
 
 --
+
+drop table ers_users 
+
+drop table ers_user_roles 
+
+drop table ers_reimbursements 
+
+drop table ers_reimb_statuses 
+
+drop table ers_reimb_types 
+
 truncate ers_users restart identity cascade
 
 truncate ers_user_roles restart identity cascade
@@ -81,8 +92,8 @@ values
 SELECT
     *
 FROM
-    ers_users
-    INNER JOIN ers_user_roles ON ers_users.user_role_id = ers_user_roles.role_id;
+    ers_users eu 
+    INNER JOIN ers_user_roles ON eu.user_role_id = ers_user_roles.role_id;
 --
 
 insert into
@@ -105,9 +116,9 @@ values
 insert into
     ers_reimbursements (amount, submitted, resolved, description, reciept, author_id, resolver_id, reimb_status_id, reimb_type_id)
 values
-    (100, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description', 'This is a reciept picture', 2, 1, 1, 3);
-    (125, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description', 'This is a reciept picture', 1, 1, 2, 4);
-    (50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description', 'This is a reciept picture', 3, 1, 3, 1);
+    (100, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description', 'This is a reciept picture', 2, 1, 1, 3),
+    (125, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description', 'This is a reciept picture', 1, 1, 2, 4),
+    (50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description', 'This is a reciept picture', 3, 1, 3, 1),
     (62, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description', 'This is a reciept picture', 1, 1, 1, 2);
 
 --
@@ -117,6 +128,29 @@ commit;
 SELECT
     *
 FROM
-    ers_reimbursements
-    INNER JOIN ers_reimb_types ON ers_users.reimb_type_id = ers_reimb_types.reimb_type_id
-    INNER JOIN ers_reimb_statuses ON ers_users.reimb_status_id = ers_reimb_statuses.reimb_status_id
+    ers_reimbursements rb 
+    INNER JOIN ers_reimb_types on rb.reimb_type_id = ers_reimb_types.reimb_type_id
+    INNER JOIN ers_reimb_statuses ON rb.reimb_status_id = ers_reimb_statuses.reimb_status_id
+    
+select
+        rb.ers_reimb_id, 
+        rb.amount, 
+        rb.submitted,
+        rb.resolved,
+        rb.reciept,
+        eu.username as rb.author_id,
+        eu.username as rb.resolver_id,
+        rs.reimb_statuses as reimb_status_id,
+        rt.reimb_types as reimb_type_id
+    from ers_reimbursements rb
+   
+       
+    INNER JOIN ers_reimb_types rt
+    ON rb.reimb_type_id =rt.reimb_type_id
+
+    INNER JOIN ers_reimb_statuses rs
+    ON rb.reimb_status_id = rs.reimb_status_id
+
+    INNER JOIN ers_users eu
+    ON rb.author_id = eu.ers_user_id
+    AND rb.resolver_id = eu.ers_user_id
