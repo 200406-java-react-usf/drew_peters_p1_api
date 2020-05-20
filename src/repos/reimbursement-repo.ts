@@ -8,14 +8,26 @@ import { mapReimbursementResultSet } from '../util/result-set-mapper';
 export class ReimbursementRepository implements CrudRepository<Reimbursement> {
 
     baseQuery =  `
-    select
-        *
-    from
-        ers_reimbursements er
-        inner join ers_reimb_types 
-        on er.reimb_type_id = ers_reimb_types.reimb_type_id
-        inner join ers_reimb_statuses 
-        on er.reimb_status_id = ers_reimb_statuses.reimb_status_id
+    select 
+        er.reimb_id,
+        er.amount,
+        er.submitted,
+        er.resolved,
+        er.description,
+        eu.username as author_id,
+        eu.username as resolver_id,
+        rs.reimb_status as reimb_status_id,
+        rt.reimb_type as reimb_type_id
+    from 
+        ers_reimbursements as er
+    join 
+        ers_users as eu on er.author_id = eu.ers_user_id
+    join 
+    	ers_users as eu2 on er.resolver_id = eu2.ers_user_id 
+    join 
+        ers_reimb_statuses as rs on er.reimb_status_id = rs.reimb_status_id
+    join 
+        ers_reimb_types as rt on er.reimb_type_id = rt.reimb_type_id
     `;
 
 
