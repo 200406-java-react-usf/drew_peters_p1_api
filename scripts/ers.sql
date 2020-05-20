@@ -130,6 +130,7 @@ commit;
         er.submitted,
         er.resolved,
         er.description,
+        er.reciept, 
         eu.username as author_id,
         eu.username as resolver_id,
         rs.reimb_status as reimb_status_id,
