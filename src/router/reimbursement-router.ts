@@ -13,14 +13,11 @@ ReimbursementRouter.get('', adminGuard, async (req, resp) => {
     console.log('GET ALL REIMB REQUESTED @/reimbursements');
     try {
         let reqURL = url.parse(req.url, true);
-        if(!isEmptyObject(reqURL.query)) {
-            let payload = await reimbursementService.getReimbursementByUniqueKey({...reqURL.query});
-            return resp.status(200).json(payload);
-        } else {
-            let payload = await reimbursementService.getAllReimbursements();
+        let payload = await reimbursementService.getAllReimbursements();
             return resp.status(200).json(payload);
         }
-    } catch (e) {
+        catch (e) {
+        console.log('Made it this far');
         return resp.status(e.statusCode).json(e);
     }
 });

@@ -47,7 +47,6 @@ create table ers_reimbursements (
     constraint reimb_id_pk primary key (reimb_id),
     constraint reimb_status_id_fk foreign key (reimb_status_id) references ers_reimb_statuses,
     constraint reimb_type_id_fk foreign key (reimb_type_id) references ers_reimb_types
-
 );
 
 --
@@ -93,7 +92,7 @@ SELECT
     *
 FROM
     ers_users eu 
-    INNER JOIN ers_user_roles ON eu.user_role_id = ers_user_roles.role_id;
+    inner join ers_user_roles on eu.user_role_id = ers_user_roles.role_id;
 --
 
 insert into
@@ -125,32 +124,32 @@ values
 
 commit;
 
-SELECT
-    *
-FROM
-    ers_reimbursements rb 
-    INNER JOIN ers_reimb_types on rb.reimb_type_id = ers_reimb_types.reimb_type_id
-    INNER JOIN ers_reimb_statuses ON rb.reimb_status_id = ers_reimb_statuses.reimb_status_id
-    
 select
-        rb.ers_reimb_id, 
-        rb.amount, 
-        rb.submitted,
-        rb.resolved,
-        rb.reciept,
-        eu.username as rb.author_id,
-        eu.username as rb.resolver_id,
-        rs.reimb_statuses as reimb_status_id,
-        rt.reimb_types as reimb_type_id
-    from ers_reimbursements rb
-   
-       
-    INNER JOIN ers_reimb_types rt
-    ON rb.reimb_type_id =rt.reimb_type_id
-
-    INNER JOIN ers_reimb_statuses rs
-    ON rb.reimb_status_id = rs.reimb_status_id
-
-    INNER JOIN ers_users eu
-    ON rb.author_id = eu.ers_user_id
-    AND rb.resolver_id = eu.ers_user_id
+    *
+from
+    ers_reimbursements er
+    inner join ers_reimb_types 
+    on er.reimb_type_id = ers_reimb_types.reimb_type_id
+    inner join ers_reimb_statuses 
+    on er.reimb_status_id = ers_reimb_statuses.reimb_status_id
+    
+--select
+--        erreimb_id, 
+--        er.amount, 
+--        er.submitted,
+--        er.resolved,
+--        er.reciept
+--from ers_reimbursements er
+--        
+--        eu.username as er.author_id,
+--        eu.username as er.resolver_id,
+--        rs.reimb_statuses as reimb_status_id,
+--        rt.reimb_types as reimb_type_id
+--    from ers_reimbursements er
+--    inner join ers_reimb_types rt
+--    on er.reimb_type_id =rt.reimb_type_id
+--    inner join ers_reimb_statuses rs
+--    on er.reimb_status_id = rs.reimb_status_id
+--    inner join ers_users eu
+--    on er.author_id = eu.ers_user_id
+--    and er.resolver_id = eu.ers_user_id
