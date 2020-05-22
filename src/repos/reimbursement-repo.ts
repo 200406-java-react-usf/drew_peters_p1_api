@@ -18,16 +18,13 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         eu.username as resolver_id,
         rs.reimb_status as reimb_status_id,
         rt.reimb_type as reimb_type_id
-    from 
-        ers_reimbursements as er
-    join 
-        ers_users as eu on er.author_id = eu.ers_user_id
-    join 
-    	ers_users as eu2 on er.resolver_id = eu2.ers_user_id 
-    join 
-        ers_reimb_statuses as rs on er.reimb_status_id = rs.reimb_status_id
-    join 
-        ers_reimb_types as rt on er.reimb_type_id = rt.reimb_type_id
+    from ers_reimbursements as er
+    join ers_reimb_statuses rs 
+    on er.reimb_status_id = rs.reimb_status_id
+    join ers_reimb_types rt
+    on er.reimb_type_id = rt.reimb_type_id 
+    join ers_users eu
+    on er.author_id = eu.ers_user_id 
     `;
 
 
