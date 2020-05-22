@@ -15,7 +15,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         er.resolved,
         er.description,
         eu.username as author_id,
-        eu.username as resolver_id,
+        eu2.username as resolver_id,
         rs.reimb_status as reimb_status_id,
         rt.reimb_type as reimb_type_id
     from ers_reimbursements as er
@@ -25,6 +25,8 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
     on er.reimb_type_id = rt.reimb_type_id 
     join ers_users eu
     on er.author_id = eu.ers_user_id 
+    left join ers_users eu2
+    on er.resolver_id = eu2.ers_user_id
     `;
 
 
@@ -40,8 +42,8 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
             
             let rs = await client.query(sql);
             
-            console.log(rs.rows.map(mapReimbursementResultSet));
-            return rs.rows.map(mapReimbursementResultSet);
+            // console.log(rs.rows.map(mapReimbursementResultSet));
+            return rs.rows;
             
         } catch (e) {
             console.log(e);
@@ -147,7 +149,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         try {
             client = await connectionPool.connect();
             let sql = `
-                update reimbursements
+                update ers_reimbursements
                 set
                     resolved = CURRENT_TIMESTAMP,
                     resolver_id = $2,

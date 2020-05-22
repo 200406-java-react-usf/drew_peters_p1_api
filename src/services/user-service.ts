@@ -156,28 +156,39 @@ export class UserService {
 /**
  * 
  */
-    async updateUser(updatedUser: User): Promise<boolean> {
-        
-        if (!isValidObject(updatedUser)) {
-            throw new BadRequestError();
-        }
+async updateUser(updatedUser: User): Promise<boolean> {
+    
+    // if (!isValidObject(updatedUser)) {
+    //     throw new BadRequestError();
+    // }
 
-        let toUpdateUser = await this.getUserById(updatedUser.ers_user_id);
+    // will throw an error if no user is found with provided id
+    let userToUpdate = await this.getUserById(updatedUser.ers_user_id);
 
-        let isAvailable = await this.isUsernameAvailable(updatedUser.username);
+    let isUsernameAvailable = await this.isUsernameAvailable(updatedUser.username);
 
-        if(toUpdateUser.username === updatedUser.username) {
-            isAvailable = true;
-        }
-        
-        if (!isAvailable) {
-            throw new ResourcePersistenceError('This username is already taken. Please pick another.');
-        }
-
-        await this.userRepo.update(updatedUser);
-
-        return true;
+    if(userToUpdate.username === updatedUser.username) {
+        isUsernameAvailable = true;
     }
+    
+    if (!isUsernameAvailable) {
+        throw new ResourcePersistenceError('This username is already taken. Please pick another.');
+    }
+
+    let isEmailAvailable = await this.isEmailAvailable(updatedUser.email);
+
+    if(userToUpdate.email === updatedUser.email) {
+        isEmailAvailable = true;
+    }
+
+    if (!isEmailAvailable) {
+        throw new ResourcePersistenceError('This email is already taken. Please use another.')
+    }
+
+    await this.userRepo.update(updatedUser);
+
+    return true;
+}
 
 /**
  * 
