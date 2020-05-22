@@ -20,6 +20,6 @@ export const managerGuard = (req: Request, resp: Response, next) => {
     } else if (req.session.principal.role === 'Manager') {
         next();
     } else {
-        resp.status(403).json(new AuthorizationError());
+        resp.status(403).json(new AuthorizationError('You need manager access to do this.'));
     }
 }
