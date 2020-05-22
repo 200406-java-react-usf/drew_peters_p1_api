@@ -3,14 +3,11 @@ import { ReimbursementRepository }  from '../repos/reimbursement-repo';
 import { 
     isValidId, 
     isValidObject, 
-    isEmptyObject,
-    isValidStatus,
-    isPropertyOf 
+    isEmptyObject
 } from '../util/validator';
 import { 
     BadRequestError, 
-    ResourceNotFoundError,
-    ResourceConflictError
+    ResourceNotFoundError
 } from '../errors/errors';
 
 export class ReimbursementService {
@@ -23,7 +20,6 @@ export class ReimbursementService {
  * 
  */
     async getAllReimbursements(): Promise<Reimbursement[]> {
-        console.log('Made it this far in Services');
         
         let reimbursements = await this.reimbursementRepo.getAll();
 
@@ -37,17 +33,12 @@ export class ReimbursementService {
 /**
  * 
  */
-    async getAllReimbursementsByUser(id: number): Promise<Reimbursement[]> {
+async getReimbursementByUsername(username: string) {
 
-        let reimbursements = await this.reimbursementRepo.getAllByUser(id);
-    
-        if (reimbursements.length == 0) {
-            throw new ResourceNotFoundError();
-        }
-    
-        return reimbursements;
-    
-    }
+    const reimbs = await this.reimbursementRepo.getAllByUser(username);
+
+    return reimbs;
+}
 
 /**
  * 
@@ -55,19 +46,13 @@ export class ReimbursementService {
     async getReimbursementById(id: number): Promise<Reimbursement> {
 
         try {
+            let reimb = await this.reimbursementRepo.getById(id);
 
-            if (!isValidId(id)) {
-                throw new BadRequestError();
+            if (isEmptyObject(reimb)) {
+                throw new ResourceNotFoundError('No reimbursement found with that ID');
             }
 
-            let reimbursement = {...await this.reimbursementRepo.getById(id)};
-
-            if (isEmptyObject(reimbursement)) {
-                throw new ResourceNotFoundError();
-            }
-
-            return reimbursement;
-
+            return reimb;
         } catch (e) {
             throw e;
         }
@@ -76,32 +61,32 @@ export class ReimbursementService {
 /**
  * 
  */
-    async getReimbursementByUniqueKey(queryObj: any): Promise<Reimbursement> {
+    // async getReimbursementByUniqueKey(queryObj: any): Promise<Reimbursement> {
 
-        try {
-            let queryKeys = Object.keys(queryObj);
-            if(!queryKeys.every(key => isPropertyOf(key, Reimbursement))) {
-                throw new BadRequestError();
-            }
-            let key = queryKeys[0];
-            let val = queryObj[key];
+    //     try {
+    //         let queryKeys = Object.keys(queryObj);
+    //         if(!queryKeys.every(key => isPropertyOf(key, Reimbursement))) {
+    //             throw new BadRequestError();
+    //         }
+    //         let key = queryKeys[0];
+    //         let val = queryObj[key];
 
-            if (key === 'reimb_id') {
-                return await this.getReimbursementById(+val);
-            }
+    //         if (key === 'reimb_id') {
+    //             return await this.getReimbursementById(+val);
+    //         }
 
-            let reimbursement = await this.reimbursementRepo.getReimbursementByUniqueKey(key, val);
+    //         let reimbursement = await this.reimbursementRepo.getReimbursementByUniqueKey(key, val);
 
-            if (isEmptyObject(reimbursement)) {
-                throw new ResourceNotFoundError();
-            }
+    //         if (isEmptyObject(reimbursement)) {
+    //             throw new ResourceNotFoundError();
+    //         }
 
-            return reimbursement;
+    //         return reimbursement;
 
-        } catch (e) {
-            throw e;
-        }
-    }
+    //     } catch (e) {
+    //         throw e;
+    //     }
+    // }
 
 /**
  * 
@@ -129,16 +114,21 @@ export class ReimbursementService {
     async updateReimbursement(updatedReimbursement: Reimbursement): Promise<boolean> {
         
         try {
-            if (!isValidId(updatedReimbursement.reimb_id)) {
-                throw new BadRequestError();
-            }
             if (!isValidObject(updatedReimbursement)) {
-                throw new BadRequestError();
+                throw new BadRequestError('One or more fields are missing');
             }
-            if (!isValidStatus(updatedReimbursement.reimb_status)) {
-                throw new BadRequestError();
+            if (!isValidId(updatedReimbursement.reimb_id)) {
+                throw new BadRequestError('You did not enter a valid ID');
             }
-            return await this.reimbursementRepo.update(updatedReimbursement);
+    
+            // will throw eror if no reimb is found with that ID
+            await this.getReimbursementById(updatedReimbursement.reimb_id);
+            
+            if(updatedReimbursement.resolver_id) await this.reimbursementRepo.resolve(updatedReimbursement);
+            else await this.reimbursementRepo.update(updatedReimbursement);
+    
+            
+            return true;
         } catch (e) {
             throw e;
         }

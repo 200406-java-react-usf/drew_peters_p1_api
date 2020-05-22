@@ -23,7 +23,7 @@ export const isPropertyOf = (prop: string, type: any) => {
         return new Type();
     } 
 
-    let tempInstance;
+    let tempInstance: any;
     try {
         tempInstance = typeCreator(type);
     } catch {

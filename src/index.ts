@@ -41,5 +41,5 @@ app.use('/reimbursements', ReimbursementRouter);
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
-    console.log(`Application running and listening at: http://localhost:8080`);
+    console.log(`Application running on: http://localhost:8080`);
 });

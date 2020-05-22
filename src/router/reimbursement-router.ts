@@ -1,28 +1,22 @@
-import url from 'url';
 import express from 'express';
 import AppConfig from '../config/app';
-import { isEmptyObject } from '../util/validator';
-import { ParsedUrlQuery } from 'querystring';
-import { adminGuard } from '../middleware/auth-middleware';
 
 export const ReimbursementRouter = express.Router();
 
 const reimbursementService = AppConfig.reimbursementService;
 
-ReimbursementRouter.get('', adminGuard, async (req, resp) => {
+ReimbursementRouter.get('', async (req, resp) => {
     console.log('GET ALL REIMB REQUESTED @/reimbursements');
     try {
-        let reqURL = url.parse(req.url, true);
         let payload = await reimbursementService.getAllReimbursements();
             return resp.status(200).json(payload);
         }
         catch (e) {
-        console.log('Made it this far');
         return resp.status(e.statusCode).json(e);
     }
 });
 
-ReimbursementRouter.get('/:id', adminGuard, async (req, resp) => {
+ReimbursementRouter.get('/:id', async (req, resp) => {
     console.log('GET REIMB BY ID REQUESTED @/reimbursements');
     const id = +req.params.id;
     try {     
@@ -33,20 +27,17 @@ ReimbursementRouter.get('/:id', adminGuard, async (req, resp) => {
     }
 });
 
-ReimbursementRouter.get('/query', adminGuard, async (req, res) => {
-    console.log('GET REIMB BY UNIQUE KEY REQUESTED @/reimbursements');
-    let reqURL = url.parse(req.url, true);
-    if(!isEmptyObject<ParsedUrlQuery>(reqURL.query)) {
-        let payload = await reimbursementService.getReimbursementByUniqueKey({...reqURL.query});
-        res.status(200).json(payload);
-    } else {
-        let payload = await reimbursementService.getAllReimbursements();
-        res.status(200).json(payload);
+ReimbursementRouter.get('/:username', async (req, resp) => {
+    const username = req.params.username;
+    try {
+        let payload = await reimbursementService.getReimbursementByUsername(username);
+        resp.status(200).json(payload);
+    } catch (e) {
+        return resp.status(e.statusCode).json(e);
     }
-
 });
 
-ReimbursementRouter.post('', adminGuard, async (req, resp) => {
+ReimbursementRouter.post('', async (req, resp) => {
 
     console.log('NEW REIMB REQUESTED @/reimbursements');
     console.log(req.body);
@@ -58,7 +49,7 @@ ReimbursementRouter.post('', adminGuard, async (req, resp) => {
     }
 });
 
-ReimbursementRouter.patch('/:id', adminGuard, async (req, resp) => {
+ReimbursementRouter.patch('/:id', async (req, resp) => {
     const id = +req.params.id;
     console.log('UPDATE REIMB REQUESTED @/reimbursements');
     console.log(req.body);
@@ -66,11 +57,11 @@ ReimbursementRouter.patch('/:id', adminGuard, async (req, resp) => {
         let status = await reimbursementService.updateReimbursement(req.body);
         return resp.status(204).json(status);
     } catch (e) {
-        return resp.status(e.statusCode).json(e);
+        return resp.status(e.statusCode || 500).json(e);
     }
 });
 
-ReimbursementRouter.delete('/:id', adminGuard, async (req, resp) => {
+ReimbursementRouter.delete('/:id', async (req, resp) => {
     const id = +req.params.id;
     console.log('DELETE REIMB REQUESTED @/reimbursements');
     console.log(req.body);

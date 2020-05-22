@@ -2,13 +2,12 @@ import url from 'url';
 import express from 'express';
 import AppConfig from '../config/app';
 import { isEmptyObject } from '../util/validator';
-import { adminGuard } from '../middleware/auth-middleware';
 
 export const UserRouter = express.Router();
 
 const userService = AppConfig.userService;
 
-UserRouter.get('', adminGuard, async (req, resp) => {
+UserRouter.get('', async (req, resp) => {
     console.log('GET ALL USERS REQUESTED @/users');
     try {
         let reqURL = url.parse(req.url, true);
@@ -24,7 +23,7 @@ UserRouter.get('', adminGuard, async (req, resp) => {
     }
 });
 
-UserRouter.get('/:id', adminGuard, async (req, resp) => {
+UserRouter.get('/:id', async (req, resp) => {
     console.log('GET USER BY ID REQUESTED @/users');
     const id = +req.params.id;
     try {
@@ -35,7 +34,7 @@ UserRouter.get('/:id', adminGuard, async (req, resp) => {
     }
 });
 
-UserRouter.post('', adminGuard, async (req, resp) => {
+UserRouter.post('', async (req, resp) => {
     console.log('NEW USER REQUESTED @/users');
     console.log(req.body);
     try {
@@ -46,7 +45,7 @@ UserRouter.post('', adminGuard, async (req, resp) => {
     }
 });
 
-UserRouter.patch('/:id', adminGuard, async (req, resp) => {
+UserRouter.patch('/:id', async (req, resp) => {
     const id = +req.params.id;
     console.log('UPDATE USER REQUESTED @/users');
     console.log(req.body);
@@ -58,7 +57,7 @@ UserRouter.patch('/:id', adminGuard, async (req, resp) => {
     }
 });
 
-UserRouter.delete('/:id', adminGuard, async (req, resp) => {
+UserRouter.delete('/:id', async (req, resp) => {
     const id = +req.params.id;
     console.log('DELETE USER REQUESTED @/users');
     console.log(req.body);

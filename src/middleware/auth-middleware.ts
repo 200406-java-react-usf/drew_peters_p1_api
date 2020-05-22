@@ -1,11 +1,23 @@
-import { Request, Response } from "express";
-import { AuthenticationError, AuthorizationError } from "../errors/errors";
 
-export const adminGuard = (req: Request, resp: Response, next: any) => {
-    console.log('AUTH REQUESTED @/auth');
+import { Request, Response } from 'express';
+import { AuthorizationError } from '../errors/errors';
+
+export const adminGuard = (req: Request, resp: Response, next) => {
+
     if (!req.session.principal) {
-        resp.status(401).json(new AuthenticationError('No session found! Please login.'));
-    } else if (req.session.principal.role_name === 'admin') {
+        resp.status(401).json(new AuthorizationError('No login detected. Please login.'));
+    } else if (req.session.principal.role === 'Admin') {
+        next();
+    } else {
+        resp.status(403).json(new AuthorizationError('You need admin access to do this.'));
+    }
+}
+
+export const managerGuard = (req: Request, resp: Response, next) => {
+
+    if (!req.session.principal) {
+        resp.status(401).json(new AuthorizationError('No login detected. Please login.'));
+    } else if (req.session.principal.role === 'Manager') {
         next();
     } else {
         resp.status(403).json(new AuthorizationError());
