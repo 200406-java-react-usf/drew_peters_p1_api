@@ -1,7 +1,5 @@
-import url from 'url';
 import express from 'express';
 import AppConfig from '../config/app';
-import { isEmptyObject } from '../util/validator';
 
 export const UserRouter = express.Router();
 
@@ -10,16 +8,10 @@ const userService = AppConfig.userService;
 UserRouter.get('', async (req, resp) => {
     console.log('GET ALL USERS REQUESTED @/users');
     try {
-        let reqURL = url.parse(req.url, true);
-        if(!isEmptyObject(reqURL.query)) {
-            let payload = await userService.getUserByUniqueKey({...reqURL.query});
-            return resp.status(200).json(payload);
-        } else {
-            let payload = await userService.getAllUsers();
-            return resp.status(200).json(payload);
-        }
+        let payload = await userService.getAllUsers();
+        resp.status(200).json(payload);
     } catch (e) {
-        return resp.status(e.statusCode).json(e);
+        resp.status(400).json(e);
     }
 });
 
