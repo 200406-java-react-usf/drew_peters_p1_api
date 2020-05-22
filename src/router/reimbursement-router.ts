@@ -49,8 +49,7 @@ ReimbursementRouter.post('', async (req, resp) => {
     }
 });
 
-ReimbursementRouter.patch('/:id', async (req, resp) => {
-    const id = +req.params.id;
+ReimbursementRouter.patch('', async (req, resp) => {
     console.log('UPDATE REIMB REQUESTED @/reimbursements');
     console.log(req.body);
     try {
