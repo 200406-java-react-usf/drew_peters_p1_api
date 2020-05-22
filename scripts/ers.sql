@@ -38,7 +38,6 @@ create table ers_reimbursements (
     submitted timestamp not null,
     resolved timestamp not null,
     description varchar(256) not null,
-    reciept BYTEA,
     author_id int not null,
     resolver_id int,
     reimb_status_id int not null,
@@ -113,12 +112,12 @@ values
 --
 
 insert into
-    ers_reimbursements (amount, submitted, resolved, description, reciept, author_id, resolver_id, reimb_status_id, reimb_type_id)
+    ers_reimbursements (amount, submitted, resolved, description, author_id, resolver_id, reimb_status_id, reimb_type_id)
 values
-    (100, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description', 'This is a reciept picture', 2, 1, 1, 3),
-    (125, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description', 'This is a reciept picture', 1, 1, 2, 4),
-    (50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description', 'This is a reciept picture', 3, 1, 3, 1),
-    (62, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description', 'This is a reciept picture', 1, 1, 1, 2);
+    (100, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description', 2, 1, 1, 3),
+    (125, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description', 1, 1, 2, 4),
+    (50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description',  3, 1, 3, 1),
+    (62, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'This is a reimb description',  1, 1, 1, 2);
 
 --
 
@@ -130,7 +129,6 @@ commit;
         er.submitted,
         er.resolved,
         er.description,
-        er.reciept, 
         eu.username as author_id,
         eu.username as resolver_id,
         rs.reimb_status as reimb_status_id,

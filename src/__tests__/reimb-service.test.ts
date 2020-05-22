@@ -24,11 +24,11 @@ describe('ReimbursementService', () => {
     let mockRepo;
     let date = new Date();
     let mockReimbursements = [
-        new Reimbursement(1, 100, date, date, 'text', 'reciept', 'author-test', 'resv-test', 'pending', 'food'),
-        new Reimbursement(2, 200, date, date, 'text', 'reciept', 'author-test', 'resv-test', 'approved', 'food'),
-        new Reimbursement(3, 300, date, date, 'text', 'reciept', 'author-test', 'resv-test', 'approved', 'food'),
-        new Reimbursement(4, 400, date, date, 'text', 'reciept', 'author-test', 'resv-test', 'approved', 'food'),
-        new Reimbursement(5, 500, date, date, 'text', 'reciept', 'author-test', 'resv-test', 'approved', 'food')
+        new Reimbursement(1, 100, date, date, 'text', 1, 1, 3, 2),
+        new Reimbursement(2, 200, date, date, 'text', 1, 1, 1, 2),
+        new Reimbursement(3, 300, date, date, 'text', 1, 1, 1, 2),
+        new Reimbursement(4, 400, date, date, 'text', 1, 1, 1, 2),
+        new Reimbursement(5, 500, date, date, 'text', 1, 1, 1, 2)
     ];
 
     beforeEach(() => {
@@ -199,7 +199,7 @@ describe('ReimbursementService', () => {
 		});
 
         // Act
-        let newReimbursement = new Reimbursement(6, 500, date, date, 'text', 'reciept', 'author-test', 'resv-test', 'approved', 'food');
+        let newReimbursement = new Reimbursement(5, 500, date, date, 'text', 1, 1, 1, 2);
         let result = await sut.addNewReimbursement(newReimbursement);
         // Assert
         expect(result).toBeTruthy();
@@ -220,7 +220,7 @@ describe('ReimbursementService', () => {
 		});
 
         // Act
-        let newReimbursement = new Reimbursement(6, 500, date, null, 'text', 'reciept', 'author-test', 'resv-test', 'approved', 'food');
+        let newReimbursement = new Reimbursement(5, 500, date, date, 'text', 1, 1, 1, 2);
 
         try {
             await sut.addNewReimbursement(newReimbursement);
@@ -239,7 +239,7 @@ describe('ReimbursementService', () => {
 
         Validator.isValidId = jest.fn().mockReturnValue(true);
         Validator.isValidStatus = jest.fn().mockReturnValue(true);
-        mockReimbursements[0].reimb_status = 'pending'
+        mockReimbursements[0].reimb_status_id = 1
         mockRepo.update = jest.fn().mockReturnValue(mockReimbursements[0]);
 
         // Act
@@ -256,11 +256,11 @@ describe('ReimbursementService', () => {
         //expect.hasAssertions();
         Validator.isValidId = jest.fn().mockReturnValue(false);
         Validator.isValidStatus = jest.fn().mockReturnValue(true);
-        mockReimbursements[0].reimb_status = 'approved'
+        mockReimbursements[0].reimb_status_id = 1
         mockRepo.update = jest.fn().mockReturnValue({});
 
         // Act
-        let newReimbursement = new Reimbursement(7, 500, date, date, 'text', 'reciept', 'author-test', 'resv-test', 'approved', 'food');
+        let newReimbursement = new Reimbursement(5, 500, date, date, 'text', 1, 1, 1, 2);
 
         try {
             await sut.updateReimbursement(newReimbursement);
@@ -283,7 +283,7 @@ describe('ReimbursementService', () => {
         mockRepo.update = jest.fn().mockReturnValue(mockReimbursements[0]);
         // Act
 
-        let newReimbursement = new Reimbursement(6, 500, date, date, 'text', 'reciept', 'author-test', 'resv-test', null, 'food');
+        let newReimbursement = new Reimbursement(5, 500, date, date, 'text', 1, 1, 1, 2);
 
         try {
             await sut.updateReimbursement(newReimbursement);
@@ -305,7 +305,7 @@ describe('ReimbursementService', () => {
         mockRepo.update = jest.fn().mockReturnValue(mockReimbursements[0]);
         // Act
 
-        let newReimbursement = new Reimbursement(6, 500, date, date, 'text', 'reciept', 'author-test', 'resv-test', null, 'food');
+        let newReimbursement = new Reimbursement(5, 500, date, date, 'text', 1, 1, 1, 2);
 
         try {
             await sut.updateReimbursement(newReimbursement);
@@ -327,7 +327,7 @@ describe('ReimbursementService', () => {
         mockRepo.update = jest.fn().mockReturnValue(mockReimbursements[0]);
         // Act
 
-        let newReimbursement = new Reimbursement(null, 500, date, date, 'text', 'reciept', 'author-test', 'resv-test', null, 'food');
+        let newReimbursement = new Reimbursement(5, 500, date, date, 'text', 1, 1, 1, 2);
 
         try {
             await sut.updateReimbursement(newReimbursement);
@@ -349,7 +349,7 @@ describe('ReimbursementService', () => {
         mockRepo.update = jest.fn().mockReturnValue(mockReimbursements[0]);
         // Act
 
-        let newReimbursement = new Reimbursement(1, 500, date, date, 'text', 'reciept', 'author-test', 'resv-test', "test", 'food');
+        let newReimbursement = new Reimbursement(5, 500, date, date, 'text', 1, 1, 1, 2);
 
         try {
             await sut.updateReimbursement(newReimbursement);

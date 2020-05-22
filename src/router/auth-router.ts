@@ -11,20 +11,15 @@ AuthRouter.get('', (req, resp) => {
     resp.status(204).send();
 });
 
-AuthRouter.post('', async (req, resp) => {
-
+AuthRouter.post('', async (req,resp) => {
     try {
-
         const { username, password } = req.body;
         let authUser = await userService.authenticateUser(username, password);
         let payload = new Principal(authUser.ers_user_id, authUser.username, authUser.role_name);
         req.session.principal = payload;
-        resp.status(200).json(payload);
-        
+        let loggedInUser = await userService.getUserById(authUser.ers_user_id);
+        resp.status(200).json(loggedInUser);
     } catch (e) {
         resp.status(e.statusCode || 500).json(e);
     }
-
-    resp.send();
-
 });

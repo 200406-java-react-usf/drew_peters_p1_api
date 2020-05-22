@@ -15,7 +15,7 @@ export class UserRepository implements CrudRepository<User> {
             eu.first_name,
             eu.last_name,
             eu.email,
-            ur.role_name as role_name
+            ur.role_name as role_name_id
         from ers_users eu
         join ers_user_roles ur
         on eu.user_role_id = ur.role_id
@@ -222,6 +222,7 @@ export class UserRepository implements CrudRepository<User> {
         let client: PoolClient;
             try { 
                 client = await connectionPool.connect();
+
                 let sql = `
                     delete from ers_users
                     where ers_user_id = $1
@@ -236,5 +237,45 @@ export class UserRepository implements CrudRepository<User> {
             } finally {
                 client && client.release();
             }
+    }
+
+// Checks if username is available
+    async checkUsername(username: string): Promise<User> {
+        let client: PoolClient;
+
+        try {
+            client = await connectionPool.connect();
+
+            let sql = `select * from users where username = $1`;
+
+            let rs = await client.query(sql, [username]);
+
+            return mapUserResultSet(rs.rows[0]);
+
+        } catch (e) {
+            throw new InternalServerError('Username already taken');
+        } finally {
+            client && client.release();
+        }
+    }
+
+// Checks if email is available
+    async checkEmail(email: string): Promise<User> {
+        let client: PoolClient;
+
+        try {
+            client = await connectionPool.connect();
+
+            let sql = `select * from users where email = $1`;
+
+            let rs = await client.query(sql, [email]);
+
+            return mapUserResultSet(rs.rows[0]);
+
+        } catch (e) {
+            throw new InternalServerError('Email already in use');
+        } finally {
+            client && client.release();
+        }
     }
 }

@@ -113,7 +113,7 @@ describe('validator', () => {
 
         // Act
         let date = new Date();
-        let mockReimb = new Reimbursement(1, 100, date, date, 'text', 'reciept', 'author-test', 'resv-test', 'pending', 'food');
+        let mockReimb = new Reimbursement(1, 100, date, date, 'text', 1, 1, 3, 2);
         let result1 = isValidObject(mockReimb); 
         let result2 = isValidObject(new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', 'Admin'));
 
@@ -130,7 +130,7 @@ describe('validator', () => {
 
         // Act
         let date = new Date();
-        let mockReimb = new Reimbursement(1, 100, date, null, 'text', 'reciept', 'author-test', 'resv-test', 'pending', 'food');
+        let mockReimb = new Reimbursement(1, 100, date, date, 'text', 1, 1, 3, 2);
         let result1 = isValidObject(mockReimb, 'resolved'); 
         let result2 = isValidObject(new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', 'Admin'));
 
@@ -147,7 +147,7 @@ describe('validator', () => {
 
         // Act
         let date = new Date();
-        let mockReimb = new Reimbursement(null, 100, date, date, 'text', 'receipt', 'author-test', 'resv-test', 'pending', 'food');
+        let mockReimb = new Reimbursement(1, 100, date, date, 'text', 1, 1, 3, 2);
         let result1 = isValidObject(mockReimb); 
         let result2 = isValidObject(new User(null, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', 'Admin'));
 

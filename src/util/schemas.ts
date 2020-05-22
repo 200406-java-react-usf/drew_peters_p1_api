@@ -13,9 +13,8 @@ export interface ReimbursementSchema {
     submitted: Date,
     resolved: Date,
     description: string,
-    reciept: any,
-    author: string,
-    resolver: string,
-    reimb_status: string,
-    reimb_type: string
+    author_id: number,
+    resolver_id: number,
+    reimb_status_id: number,
+    reimb_type_id: number
 }
